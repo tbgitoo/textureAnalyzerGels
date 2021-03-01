@@ -1,0 +1,2544 @@
+plot(sampleGel $Distance)
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData$Time),by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]=to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                }#
+            }#
+        }#
+        textureAnalyzerData <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    }#
+	return(textureAnalyzerData)#
+}
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+plot(sampleGel $Distance)
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData$Time),by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]=to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+	return(textureAnalyzerData_to_return)#
+}
+plot(sampleGel $Distance)
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+plot(sampleGel $Distance)
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData$Time),by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]=to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+    cat("hallo")#
+	return(textureAnalyzerData_to_return)#
+}
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData$Time),by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]=to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+    plot(textureAnalyzerData_to_return$Distance)#
+	return(textureAnalyzerData_to_return)#
+}
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData$Time),by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]<-to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+    plot(textureAnalyzerData_to_return$Distance)#
+	return(textureAnalyzerData_to_return)#
+}
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData$Time),by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]<-to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                cat("coucou")#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+    plot(textureAnalyzerData_to_return$Distance)#
+	return(textureAnalyzerData_to_return)#
+}
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData$Time),by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                return(reverse)#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]<-to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                cat("coucou")#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+    plot(textureAnalyzerData_to_return$Distance)#
+	return(textureAnalyzerData_to_return)#
+}
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+sampleGel
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData$Time),by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                if(theDirection=="up") return(reverse)#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]<-to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                cat("coucou")#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+    plot(textureAnalyzerData_to_return$Distance)#
+	return(textureAnalyzerData_to_return)#
+}
+sampleGel
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+sampleGel
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData$Time),by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                return(grouping_order)#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]<-to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                cat("coucou")#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+    plot(textureAnalyzerData_to_return$Distance)#
+	return(textureAnalyzerData_to_return)#
+}
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+sampleGel
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData_agg$Time),by=list("group"=paste(textureAnalyzerData_agg$cycle,textureAnalyzerData_agg$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                return(grouping_order)#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]<-to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                cat("coucou")#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+    plot(textureAnalyzerData_to_return$Distance)#
+	return(textureAnalyzerData_to_return)#
+}
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+sampleGel
+detect_compression_cycles <-#
+function(textureAnalyzerData,do_aggregation=TRUE)#
+{#
+    textureAnalyzerData$cycle = NA#
+    direction_char = c("up","down")#
+    diffs = sign(diff(textureAnalyzerData$Distance))#
+    n=length(diffs)#
+    # Get the sign of the first movement (1 is down, -1 is up)#
+    current_direction = diffs[which(diffs!=0)[1]]#
+    current_pos = 1#
+    current_cycle = 1#
+    # Find the next turning point#
+    turning_point=which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]#
+    while(!is.na(turning_point))#
+    {#
+        textureAnalyzerData$direction[current_pos:turning_point] = direction_char[(current_direction+3)/2]#
+        textureAnalyzerData$cycle[current_pos:turning_point] = current_cycle#
+        current_pos=turning_point#
+        current_direction=diffs[turning_point]#
+        current_cycle = current_cycle+1#
+        turning_point=current_pos+which(diffs[current_pos:n]!=0 & diffs[current_pos:n]!=current_direction)[1]-1#
+        # Last cycle#
+        if(is.na(turning_point))#
+        {#
+            textureAnalyzerData$direction[current_pos:(n+1)] = direction_char[(current_direction+3)/2]#
+            textureAnalyzerData$cycle[current_pos:(n+1)] = current_cycle#
+        }#
+    }#
+    # A cycle is once back and forth#
+    textureAnalyzerData$cycle=floor((textureAnalyzerData$cycle+1)/2)#
+    if(do_aggregation)#
+    {#
+        textureAnalyzerData_agg = aggregate(textureAnalyzerData,by=list("group"=paste(textureAnalyzerData$cycle,textureAnalyzerData$direction,textureAnalyzerData$Distance,sep="_")),FUN=function(x){if(is.numeric(x)) {return(mean(x))} else {return(x[1])}})#
+        # Aggregation will sometime invert the order, need to correct this#
+        grouping_order= aggregate(data.frame(ascending=textureAnalyzerData_agg$Time),by=list("group"=paste(textureAnalyzerData_agg$cycle,textureAnalyzerData_agg$direction,sep="_")),FUN=function(x){x[length(x)]>x[1]})#
+        for(theDirection in unique(textureAnalyzerData_agg$direction))#
+        {#
+            for(theCycle in unique(textureAnalyzerData_agg$cycle))#
+            {#
+                reverse = !(grouping_order$ascending[match(paste(theCycle,theDirection,sep="_"),grouping_order$group)])#
+                if(reverse)#
+                {#
+                 to_reverse=textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]#
+                 textureAnalyzerData_agg[textureAnalyzerData_agg$direction==theDirection & textureAnalyzerData_agg$cycle==theCycle,]<-to_reverse[seq(from=dim(to_reverse)[1],to=1,by=-1),]#
+                cat("coucou")#
+                }#
+            }#
+        }#
+        textureAnalyzerData_to_return <- textureAnalyzerData_agg[,-1] # We don't need the grouping column#
+    } else { textureAnalyzerData_to_return<-textureAnalyzerData_agg }#
+    plot(textureAnalyzerData_to_return$Distance)#
+	return(textureAnalyzerData_to_return)#
+}
+sampleGel
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
+library(MEEI.AMD.injection.publication)
+data(acuity_data_extended)#
+#
+changeover=15#
+#
+data(patient_data_and_evaluation)#
+ acuity_data_extended$injections_category = as.numeric(acuity_data_extended$injections > #
+            1)#
+acuity_data_extended$risk_level = acuity_data_extended$HTA +acuity_data_extended$DM#
+acuity_data_extended$risk_level2 = acuity_data_extended$age>mean(patient_data_and_evaluation$age)#
+acuity_data_extended$smoking = acuity_data_extended$tabac>0#
+acuity_15=acuity_data_extended[acuity_data_extended$month<=changeover & acuity_data_extended$month>0 ,]#
+acuity_48=acuity_data_extended[acuity_data_extended$month>changeover & acuity_data_extended$month<=48 ,]#
+#
+acuity_15=acuity_15[!is.na(acuity_15$risk_level) & !is.na(acuity_15$injections_category),]#
+acuity_48=acuity_48[!is.na(acuity_48$risk_level) &! is.na(acuity_48$injections_category),]#
+#
+acuity_15$period=15#
+acuity_48$period=48#
+#
+acuity_all = rbind(acuity_15,acuity_48)#
+m15=lm(slope ~ initialLogMAR+DM+HTA+risk_level2+gender1M2F+smoking+injections_category,acuity_15)#
+#
+m48=lm(slope ~ initialLogMAR+DM+HTA+risk_level2+gender1M2F+smoking+injections_category,acuity_48)#
+#
+m_overall=lm(slope ~ initialLogMAR+DM+HTA+risk_level2+gender1M2F+smoking+injections_category,acuity_all)#
+#
+anv15 = anova_moulton(m15,acuity_15,"patient")#
+anv48 = anova_moulton(m48,acuity_48,"patient")#
+anv_overall = anova_moulton(m_overall,acuity_all,"patient") #
+#
+# Exclude the period from the overall P-value#
+#
+df1=attr(anv_overall,"df1")#
+df2=attr(anv_overall,"df2")#
+#
+# Do not include the assay period, used in the regression to account for time differences, into the F calculation#
+df1=df1[1:(length(df1)-1)]#
+df2=df2[1:(length(df2)-1)]#
+#
+overall_F =  mean(anv_overall[1:(dim(anv_overall)[1]-2), "F value"]*df1)/mean(df1)#
+#
+overall_pval = pf(overall_F,mean(df1),mean(df2*df1)/mean(df1),lower.tail=FALSE)#
+#
+pvals=matrix(nrow=3,ncol=8)#
+#
+rownames(pvals)=c(15,48,"overall")#
+#
+colnames(pvals)=c("initialLogMAR","DM","HTA","age","gender","smoking","injections","overall")#
+#
+var_explained = pvals#
+#
+n=dim(pvals)[1]#
+m=dim(pvals)[2]#
+ssq_15 = anv15[,"Sum Sq"]#
+ssq_15 = ssq_15[-length(ssq_15)]/ssq_15[length(ssq_15)]#
+var_explained["15",]=c(ssq_15,sum(ssq_15))#
+ssq_48 = anv48[,"Sum Sq"]#
+ssq_48 = ssq_48[-length(ssq_48)]/ssq_48[length(ssq_48)]#
+var_explained["48",]=c(ssq_48,sum(ssq_48))#
+#
+ssq_overall = anv_overall[,"Sum Sq"]#
+ssq_overall = ssq_overall[1:n]/ssq_overall[length(ssq_overall)]#
+var_explained["overall",]=c(ssq_overall,sum(ssq_overall))#
+#
+pvals["15",]=anv15[,"Pr(>F)"]#
+pvals["15","overall"]=attr(anv15,"overall_fstatistics")["Pr(>F)"]#
+pvals["48",]=anv48[,"Pr(>F)"]#
+pvals["48","overall"]=attr(anv48,"overall_fstatistics")["Pr(>F)"]#
+pvals["overall",1:(dim(anv_overall)[1]-1)] = anv_overall[1:(dim(anv_overall)[1]-1),"Pr(>F)"]#
+pvals["overall","overall"]=overall_pval#
+#
+# Multiple testing adjustment#
+pvals_adjusted=pvals#
+#
+pvals_adjusted[1:(n-1),"overall"]=p.adjust(pvals_adjusted[1:(n-1),"overall"],"fdr")#
+pvals_adjusted["overall",1:(m-1)]=p.adjust(pvals_adjusted["overall",1:(m-1)],"fdr")#
+pvals_adjusted#
+#
+significance_labels(pvals_adjusted)#
+# Accessory tests#
+#
+anova_moulton(lm(slope ~ month, acuity_all),acuity_all,"patient")#
+anova_moulton(lm(injections_category ~ month, acuity_all),acuity_all,"patient")#
+#
+acuity_all$monthF = as.factor(acuity_all$month)#
+#
+anova_moulton(lm(slope ~ monthF+injections_category, acuity_all),acuity_all,"patient")#
+#
+acuity_all$logMARNormalized_plus_3=NA#
+#
+for(thePatient in unique(acuity_all$patient))#
+{#
+	acuity_the_patient = acuity_all[acuity_all$patient == thePatient,]#
+	acuity_all$logMARNormalized_plus_3[acuity_all$patient == thePatient]=acuity_the_patient$logMARNormalized[match(acuity_the_patient$month+3,acuity_the_patient$month)]#
+}#
+#
+acuity_all$delta_0 = acuity_all$logMARNormalized_plus_3-acuity_all$logMARNormalized#
+#
+anova_moulton(lm(delta_0 ~ monthF+injections_category, acuity_all),acuity_all,"patient")
+# Fig. 3D: Anova over time to get the risk factor influences in the late phase as well#
+# ==============================================================#
+data(acuity_data_extended)#
+data(patient_data_and_evaluation)#
+ acuity_data_extended$injections_category = as.numeric(acuity_data_extended$injections > #
+            1)#
+acuity_data_extended$risk_level = acuity_data_extended$HTA +acuity_data_extended$DM#
+acuity_data_extended$risk_level2 = acuity_data_extended$age>mean(patient_data_and_evaluation$age)#
+acuity_data_extended$monthF = as.factor(acuity_data_extended$month)#
+#
+injections_category_coefficient =coefficients(lm(slope ~initialLogMAR+risk_level+risk_level2+injections_category,acuity_data_extended))[["injections_category"]]#
+acuity_data_extended$slope_corrected = acuity_data_extended$slope-injections_category_coefficient*acuity_data_extended$injections_category#
+acuity_12=acuity_data_extended[acuity_data_extended$month<12 & acuity_data_extended$month>0 ,]#
+#
+acuity_24=acuity_data_extended[acuity_data_extended$month>=12 & acuity_data_extended$month<24 ,]#
+#
+acuity_48=acuity_data_extended[acuity_data_extended$month>=24 & acuity_data_extended$month<=48 ,]#
+#
+acuity_12=acuity_12[!is.na(acuity_12$risk_level) & !is.na(acuity_12$injections_category),]#
+acuity_24=acuity_24[!is.na(acuity_24$risk_level) &!is.na(acuity_24$injections_category),]#
+acuity_48=acuity_48[!is.na(acuity_48$risk_level) &! is.na(acuity_48$injections_category),]#
+#
+acuity_12$period=12#
+acuity_24$period=24#
+acuity_48$period=48#
+#
+acuity_all = rbind(acuity_12,acuity_24,acuity_48)#
+#
+#acuity_all$period = as.factor(acuity_all$period)#
+m12=lm(slope ~ initialLogMAR+risk_level + risk_level2+injections_category,acuity_12)#
+#
+m24=lm(slope ~ initialLogMAR+risk_level + risk_level2+injections_category,acuity_24)#
+#
+m48=lm(slope ~ initialLogMAR+risk_level + risk_level2+injections_category,acuity_48)#
+#
+m_overall=lm(slope ~ initialLogMAR+risk_level + risk_level2+injections_category+period,acuity_all)#
+#
+anv12 = anova_moulton(m12,acuity_12,"patient")#
+anv24 = anova_moulton(m24,acuity_24,"patient")#
+anv48 = anova_moulton(m48,acuity_48,"patient")#
+anv_overall = anova_moulton(m_overall,acuity_all,"patient") #
+#
+# Exclude the period from the overall P-value#
+#
+df1=attr(anv_overall,"df1")#
+df2=attr(anv_overall,"df2")#
+#
+# Do not include the assay period, used in the regression to account for time differences, into the F calculation#
+df1=df1[1:(length(df1)-1)]#
+df2=df2[1:(length(df2)-1)]#
+#
+overall_F =  mean(anv_overall[1:(dim(anv_overall)[1]-2), "F value"]*df1)/mean(df1)#
+overall_pval = pf(overall_F,mean(df1),mean(df2*df1)/mean(df1),lower.tail=FALSE)#
+#
+pvals=matrix(nrow=4,ncol=5)#
+#
+rownames(pvals)=c(12,24,48,"overall")#
+#
+colnames(pvals)=c("initialLogMAR","HTA/DM","age","injections","overall")#
+#
+var_explained = pvals#
+#
+n=dim(pvals)[1]#
+m=dim(pvals)[2]#
+ssq_12 = anv12[,"Sum Sq"]#
+ssq_12 = ssq_12[1:n]/ssq_12[length(ssq_12)]#
+var_explained["12",]=c(ssq_12,sum(ssq_12))#
+#
+ssq_24 = anv24[,"Sum Sq"]#
+ssq_24 = ssq_24[1:n]/ssq_24[length(ssq_24)]#
+var_explained["24",]=c(ssq_24,sum(ssq_24))#
+#
+ssq_48 = anv48[,"Sum Sq"]#
+ssq_48 = ssq_48[1:n]/ssq_48[length(ssq_48)]#
+var_explained["48",]=c(ssq_48,sum(ssq_48))#
+#
+ssq_overall = anv_overall[,"Sum Sq"]#
+ssq_overall = ssq_overall[1:n]/ssq_overall[length(ssq_overall)]#
+var_explained["overall",]=c(ssq_overall,sum(ssq_overall))#
+#
+pvals["12",]=anv12[,"Pr(>F)"]#
+pvals["12","overall"]=attr(anv12,"overall_fstatistics")["Pr(>F)"]#
+pvals["24",]=anv24[,"Pr(>F)"]#
+pvals["24","overall"]=attr(anv24,"overall_fstatistics")["Pr(>F)"]#
+pvals["48",]=anv48[,"Pr(>F)"]#
+pvals["48","overall"]=attr(anv48,"overall_fstatistics")["Pr(>F)"]#
+pvals["overall",] = anv_overall[1:(dim(anv_overall)[1]-1),"Pr(>F)"]#
+pvals["overall","overall"]=overall_pval#
+#
+# Multiple testing adjustment#
+pvals_adjusted=pvals#
+#
+pvals_adjusted[1:(n-1),"overall"]=p.adjust(pvals_adjusted[1:(n-1),"overall"],"fdr")#
+pvals_adjusted["overall",1:(m-1)]=p.adjust(pvals_adjusted["overall",1:(m-1)],"fdr")#
+#
+heights_for_barplot=t(var_explained[1:(n-1),1:(m-1)])#
+#
+graphical_cutoff_level = 0.07#
+#
+heights_for_barplot>graphical_cutoff_level#
+#
+heights_for_barplot_adjusted = heights_for_barplot#
+#
+legend.text=c("initial logMAR","Hypertension/Diabetes","Age","Injection frequency")#
+heights_for_barplot_adjusted[heights_for_barplot_adjusted>graphical_cutoff_level & !is.na(heights_for_barplot_adjusted)]=(heights_for_barplot_adjusted[heights_for_barplot_adjusted>graphical_cutoff_level & !is.na(heights_for_barplot_adjusted)]-graphical_cutoff_level)/5+graphical_cutoff_level#
+#
+xcoords=c(barplot(heights_for_barplot_adjusted*100,beside=TRUE,ylab="Percent variance explained",ylim=c(0,10),legend.text=legend.text,col=c("white",grey(0.8),grey(0.5),"black"),axes=FALSE,cex.names=2))#
+secondary_ticks = seq(from=10,to=20,by=5) #
+#
+secondary_ticks_location = ((secondary_ticks/100-graphical_cutoff_level)/5+graphical_cutoff_level)*100#
+#
+primary_labels=expression(0,"",2,"",4,"",6)#
+#
+secondary_labels=secondary_ticks#
+#
+primary_ticks_location=0:6#
+#
+axis(side=2,at=c(primary_ticks_location,secondary_ticks_location),labels=c(primary_labels,secondary_labels),las=2,cex.axis=2)#
+ycoords=c(heights_for_barplot_adjusted*100+0.3)#
+#
+pvals_for_barplot=t(pvals_adjusted[1:(n-1),1:(m-1)])#
+#
+sig_labels=significance_labels(pvals_for_barplot)#
+#
+text(x=xcoords,y=ycoords,labels=sig_labels,cex=4)#
+#
+significance_labels(pvals_adjusted)
+names(patient_data_and_evaluation)
+data(acuity_data_extended)#
+m=lm(logMARNormalized ~ retinal_specialist,acuity_data_extended)#
+anova_moulton(m,acuity_data_extended,"patient")
+m=lm(slope ~ retinal_specialist,acuity_data_extended)#
+#
+anova_moulton(m,acuity_data_extended,"patient")
+data(acuity_data_extended)#
+m=lm(logMARNormalized ~ retinal_specialist,acuity_data_extended)#
+anova_moulton(m,acuity_data_extended,"patient")#
+#
+m=lm(slope ~ retinal_specialist,acuity_data_extended)#
+#
+anova_moulton(m,acuity_data_extended,"patient")#
+data(patient_data_and_evaluation)#
+acuity_12 = acuity_data_extended[acuity_data_extended$month==12,]#
+acuity_15 = acuity_data_extended[acuity_data_extended$month==15,]#
+acuity_24 = acuity_data_extended[acuity_data_extended$month==24,]#
+acuity_36 = acuity_data_extended[acuity_data_extended$month==36,]#
+acuity_48 = acuity_data_extended[acuity_data_extended$month==48,]#
+data(natural_history_AMD)#
+data(transition_matrix_natural_history_AMD)#
+acuity_data_extended$logMARnotreatment = predict_logMARevolution_no_treatment (acuity_data_extended$initialLogMAR,month_to_evaluate=acuity_data_extended$month)#
+acuity_data_extended$percentage = (acuity_data_extended$logMARnotreatment-acuity_data_extended$logMAR)/acuity_data_extended$logMARnotreatment#
+#
+acuity_data_extended$percentage[acuity_data_extended$percentage<0]=0#
+#
+acuity_data_extended$percentage[acuity_data_extended$month==0]=NA#
+#
+acuity_data_relevant=acuity_data_extended[acuity_data_extended$initialLogMAR>=category_mids[1],]#
+#
+acuity_data_relevant=acuity_data_relevant[acuity_data_relevant$month<=48,]#
+#
+acuity_data_relevant$year_for_graph = ceiling(acuity_data_relevant$month/12)#
+#
+acuity_data_relevant$month_as_factor=as.factor(acuity_data_relevant$month)#
+patient_data_and_evaluation$TTB=NA#
+#
+for(thePatient in patient_data_and_evaluation$patient)#
+{#
+#
+		observed=acuity_data_extended$logMAR[acuity_data_extended$patient==thePatient]#
+		expected = acuity_data_extended$logMARnotreatment[acuity_data_extended$patient==thePatient]#
+		patient_data_and_evaluation$TTB[patient_data_and_evaluation$patient==thePatient] = get_treatment_score(#
+			observed=observed,#
+			expected=expected#
+		)#
+}#
+patient_data_and_evaluation$logMARNormalized_12 = acuity_12$logMARNormalized[match(patient_data_and_evaluation$patient,acuity_12$patient)]#
+#
+patient_data_and_evaluation$logMARNormalized_15 = acuity_15$logMARNormalized[match(patient_data_and_evaluation$patient,acuity_15$patient)]#
+#
+patient_data_and_evaluation$logMARNormalized_24 = acuity_24$logMARNormalized[match(patient_data_and_evaluation$patient,acuity_24$patient)]#
+#
+patient_data_and_evaluation$logMARNormalized_48 = acuity_48$logMARNormalized[match(patient_data_and_evaluation$patient,acuity_48$patient)]#
+anova(lm(initialLogMAR~retinal_specialist,patient_data_and_evaluation))#
+ICC(patient_data_and_evaluation$initialLogMAR,patient_data_and_evaluation$retinal_specialist)#
+moulton_factor(patient_data_and_evaluation$initialLogMAR,patient_data_and_evaluation$retinal_specialist)^2#
+#
+anova(lm(logMARNormalized_12~retinal_specialist,patient_data_and_evaluation))#
+ICC(patient_data_and_evaluation$logMARNormalized_12,patient_data_and_evaluation$retinal_specialist)#
+moulton_factor(patient_data_and_evaluation$logMARNormalized_12,patient_data_and_evaluation$retinal_specialist)^2#
+#
+anova(lm(logMARNormalized_15~retinal_specialist,patient_data_and_evaluation))#
+ICC(patient_data_and_evaluation$logMARNormalized_15,patient_data_and_evaluation$retinal_specialist)#
+moulton_factor(patient_data_and_evaluation$logMARNormalized_15,patient_data_and_evaluation$retinal_specialist)^2#
+#
+anova(lm(logMARNormalized_24~retinal_specialist,patient_data_and_evaluation))#
+ICC(patient_data_and_evaluation$logMARNormalized_24,patient_data_and_evaluation$retinal_specialist)#
+moulton_factor(patient_data_and_evaluation$logMARNormalized_24,patient_data_and_evaluation$retinal_specialist)^2#
+#
+anova(lm(logMARNormalized_48~retinal_specialist,patient_data_and_evaluation))#
+ICC(patient_data_and_evaluation$logMARNormalized_48,patient_data_and_evaluation$retinal_specialist)#
+moulton_factor(patient_data_and_evaluation$logMARNormalized_48,patient_data_and_evaluation$retinal_specialist)^2#
+#
+anova(lm(TTB~ retinal_specialist,patient_data_and_evaluation))#
+ICC(patient_data_and_evaluation$TTB,patient_data_and_evaluation$retinal_specialist)#
+moulton_factor(patient_data_and_evaluation$TTB,patient_data_and_evaluation$retinal_specialist)^2
+ICC(patient_data_and_evaluation$initialLogMAR,patient_data_and_evaluation$retinal_specialist)
+moulton_factor(patient_data_and_evaluation$initialLogMAR,patient_data_and_evaluation$retinal_specialist)^2
+moulton_factor(patient_data_and_evaluation$logMARNormalized_12,patient_data_and_evaluation$retinal_specialist)^2
+moulton_factor(patient_data_and_evaluation$logMARNormalized_15,patient_data_and_evaluation$retinal_specialist)^2
+moulton_factor(patient_data_and_evaluation$logMARNormalized_24,patient_data_and_evaluation$retinal_specialist)^2
+moulton_factor(patient_data_and_evaluation$logMARNormalized_48,patient_data_and_evaluation$retinal_specialist)^2
+moulton_factor(patient_data_and_evaluation$TTB,patient_data_and_evaluation$retinal_specialist)^2
+# Fig. 3D: Anova over time to get the risk factor influences in the late phase as well#
+# ==============================================================#
+data(acuity_data_extended)#
+data(patient_data_and_evaluation)#
+ acuity_data_extended$injections_category = as.numeric(acuity_data_extended$injections > #
+            1)#
+acuity_data_extended$risk_level = acuity_data_extended$HTA +acuity_data_extended$DM#
+acuity_data_extended$risk_level2 = acuity_data_extended$age>mean(patient_data_and_evaluation$age)#
+acuity_data_extended$monthF = as.factor(acuity_data_extended$month)#
+#
+injections_category_coefficient =coefficients(lm(slope ~initialLogMAR+risk_level+risk_level2+injections_category,acuity_data_extended))[["injections_category"]]#
+acuity_data_extended$slope_corrected = acuity_data_extended$slope-injections_category_coefficient*acuity_data_extended$injections_category#
+acuity_12=acuity_data_extended[acuity_data_extended$month<12 & acuity_data_extended$month>0 ,]#
+#
+acuity_24=acuity_data_extended[acuity_data_extended$month>=12 & acuity_data_extended$month<24 ,]#
+#
+acuity_48=acuity_data_extended[acuity_data_extended$month>=24 & acuity_data_extended$month<=48 ,]#
+#
+acuity_12=acuity_12[!is.na(acuity_12$risk_level) & !is.na(acuity_12$injections_category),]#
+acuity_24=acuity_24[!is.na(acuity_24$risk_level) &!is.na(acuity_24$injections_category),]#
+acuity_48=acuity_48[!is.na(acuity_48$risk_level) &! is.na(acuity_48$injections_category),]#
+#
+acuity_12$period=12#
+acuity_24$period=24#
+acuity_48$period=48#
+#
+acuity_all = rbind(acuity_12,acuity_24,acuity_48)#
+#
+#acuity_all$period = as.factor(acuity_all$period)#
+m12=lm(slope ~ initialLogMAR+risk_level + risk_level2+injections_category,acuity_12)#
+#
+m24=lm(slope ~ initialLogMAR+risk_level + risk_level2+injections_category,acuity_24)#
+#
+m48=lm(slope ~ initialLogMAR+risk_level + risk_level2+injections_category,acuity_48)#
+#
+m_overall=lm(slope ~ initialLogMAR+risk_level + risk_level2+injections_category+period,acuity_all)#
+#
+anv12 = anova_moulton(m12,acuity_12,"patient")#
+anv24 = anova_moulton(m24,acuity_24,"patient")#
+anv48 = anova_moulton(m48,acuity_48,"patient")#
+anv_overall = anova_moulton(m_overall,acuity_all,"patient") #
+#
+# Exclude the period from the overall P-value#
+#
+df1=attr(anv_overall,"df1")#
+df2=attr(anv_overall,"df2")#
+#
+# Do not include the assay period, used in the regression to account for time differences, into the F calculation#
+df1=df1[1:(length(df1)-1)]#
+df2=df2[1:(length(df2)-1)]#
+#
+overall_F =  mean(anv_overall[1:(dim(anv_overall)[1]-2), "F value"]*df1)/mean(df1)#
+overall_pval = pf(overall_F,mean(df1),mean(df2*df1)/mean(df1),lower.tail=FALSE)#
+#
+pvals=matrix(nrow=4,ncol=5)#
+#
+rownames(pvals)=c(12,24,48,"overall")#
+#
+colnames(pvals)=c("initialLogMAR","HTA/DM","age","injections","overall")#
+#
+var_explained = pvals#
+#
+n=dim(pvals)[1]#
+m=dim(pvals)[2]#
+ssq_12 = anv12[,"Sum Sq"]#
+ssq_12 = ssq_12[1:n]/ssq_12[length(ssq_12)]#
+var_explained["12",]=c(ssq_12,sum(ssq_12))#
+#
+ssq_24 = anv24[,"Sum Sq"]#
+ssq_24 = ssq_24[1:n]/ssq_24[length(ssq_24)]#
+var_explained["24",]=c(ssq_24,sum(ssq_24))#
+#
+ssq_48 = anv48[,"Sum Sq"]#
+ssq_48 = ssq_48[1:n]/ssq_48[length(ssq_48)]#
+var_explained["48",]=c(ssq_48,sum(ssq_48))#
+#
+ssq_overall = anv_overall[,"Sum Sq"]#
+ssq_overall = ssq_overall[1:n]/ssq_overall[length(ssq_overall)]#
+var_explained["overall",]=c(ssq_overall,sum(ssq_overall))#
+#
+pvals["12",]=anv12[,"Pr(>F)"]#
+pvals["12","overall"]=attr(anv12,"overall_fstatistics")["Pr(>F)"]#
+pvals["24",]=anv24[,"Pr(>F)"]#
+pvals["24","overall"]=attr(anv24,"overall_fstatistics")["Pr(>F)"]#
+pvals["48",]=anv48[,"Pr(>F)"]#
+pvals["48","overall"]=attr(anv48,"overall_fstatistics")["Pr(>F)"]#
+pvals["overall",] = anv_overall[1:(dim(anv_overall)[1]-1),"Pr(>F)"]#
+pvals["overall","overall"]=overall_pval#
+#
+# Multiple testing adjustment#
+pvals_adjusted=pvals#
+#
+pvals_adjusted[1:(n-1),"overall"]=p.adjust(pvals_adjusted[1:(n-1),"overall"],"fdr")#
+pvals_adjusted["overall",1:(m-1)]=p.adjust(pvals_adjusted["overall",1:(m-1)],"fdr")#
+#
+heights_for_barplot=t(var_explained[1:(n-1),1:(m-1)])#
+#
+graphical_cutoff_level = 0.07#
+#
+heights_for_barplot>graphical_cutoff_level#
+#
+heights_for_barplot_adjusted = heights_for_barplot#
+#
+legend.text=c("initial logMAR","Hypertension/Diabetes","Age","Injection frequency")#
+heights_for_barplot_adjusted[heights_for_barplot_adjusted>graphical_cutoff_level & !is.na(heights_for_barplot_adjusted)]=(heights_for_barplot_adjusted[heights_for_barplot_adjusted>graphical_cutoff_level & !is.na(heights_for_barplot_adjusted)]-graphical_cutoff_level)/5+graphical_cutoff_level#
+#
+xcoords=c(barplot(heights_for_barplot_adjusted*100,beside=TRUE,ylab="Percent variance explained",ylim=c(0,10),legend.text=legend.text,col=c("white",grey(0.8),grey(0.5),"black"),axes=FALSE,cex.names=2))#
+secondary_ticks = seq(from=10,to=20,by=5) #
+#
+secondary_ticks_location = ((secondary_ticks/100-graphical_cutoff_level)/5+graphical_cutoff_level)*100#
+#
+primary_labels=expression(0,"",2,"",4,"",6)#
+#
+secondary_labels=secondary_ticks#
+#
+primary_ticks_location=0:6#
+#
+axis(side=2,at=c(primary_ticks_location,secondary_ticks_location),labels=c(primary_labels,secondary_labels),las=2,cex.axis=2)#
+ycoords=c(heights_for_barplot_adjusted*100+0.3)#
+#
+pvals_for_barplot=t(pvals_adjusted[1:(n-1),1:(m-1)])#
+#
+sig_labels=significance_labels(pvals_for_barplot)#
+#
+text(x=xcoords,y=ycoords,labels=sig_labels,cex=4)#
+#
+significance_labels(pvals_adjusted)
+anv_24
+anv24
+anova(m24)
+# For illustration of Fig. 3d#
+#
+data(acuity_data_extended)#
+#
+data(patient_data_and_evaluation)#
+ acuity_data_extended$injections_category = as.numeric(acuity_data_extended$injections > #
+            1)#
+acuity_data_extended$risk_level = acuity_data_extended$HTA+acuity_data_extended$DM#
+acuity_data_extended$risk_level2 = acuity_data_extended$age>mean(patient_data_and_evaluation$age)#
+acuity_data_extended$monthF = as.factor(acuity_data_extended$month)#
+#
+injections_category_coefficient =coefficients(lm(slope ~initialLogMAR+risk_level+risk_level2+injections_category,acuity_data_extended))[["injections_category"]]#
+acuity_data_extended$slope_corrected = acuity_data_extended$slope-injections_category_coefficient*acuity_data_extended$injections_category#
+acuity_24=acuity_data_extended[acuity_data_extended$month>=12 & acuity_data_extended$month<24 ,]#
+acuity_24=acuity_24[!is.na(acuity_24$risk_level) &!is.na(acuity_24$injections_category),]#
+#
+acuity_24$period=24#
+ag=aggregate(injections_category~patient,acuity_24,FUN=function(x){var(x)>0})#
+#
+# variable injection frequency for illustrative purposes#
+#
+variable_patients = ag$patient[ag$injections_category]#
+#
+to_illustrate=acuity_24[acuity_24$patient %in% variable_patients,c("patient","initialLogMAR","risk_level","risk_level2","injections_category","slope","month")]#
+#
+to_illustrate[53:63,]
+to_illustrate=acuity_24[acuity_24$patient %in% variable_patients,c("patient_number","initialLogMAR","risk_level","risk_level2","injections_category","slope","month")]#
+#
+to_illustrate[53:63,]
+to_illustrate[round(to_illustrate$initialLogMAR*100)=54,]
+to_illustrate[round(to_illustrate$initialLogMAR*100)==54,]
+to_illustrate[round(to_illustrate$initialLogMAR*100)==60,]
+to_illustrate[round(to_illustrate$initialLogMAR*100)==60 & to_illustrate$risk_level,]
+to_illustrate[round(to_illustrate$initialLogMAR*100)==60 & to_illustrate$risk_level & to_illustrate$risk_level2,]
+-7.511102e-05*1000
+to_illustrate
+to_illustrate[1,]
+anova(m24)
+anv24
+attributes(anv24)
+attr(anv24,"moulton")
+attr(anv24,"moulton")^2
+anv24_standard = anova(m24)
+anv24_standard
+library(MEE.AMD.injection.history)
+library(MEE.AMD.injection.publication)
+library(MEEI.AMD.injection.publication)
+data(natural_history_AMD)#
+data(transition_matrix_natural_history_AMD)#
+data(acuity_data_extended)#
+acuity_data_extended$logMARnotreatment = predict_logMARevolution_no_treatment (acuity_data_extended$initialLogMAR,month_to_evaluate=acuity_data_extended$month)#
+acuity_data_extended$percentage = (acuity_data_extended$logMARnotreatment-acuity_data_extended$logMAR)/acuity_data_extended$logMARnotreatment#
+#
+acuity_data_extended$percentage[acuity_data_extended$percentage<0]=0#
+#
+acuity_data_extended$percentage[acuity_data_extended$month==0]=NA#
+#
+acuity_data_relevant=acuity_data_extended[acuity_data_extended$initialLogMAR>=category_mids[1],]#
+#
+acuity_data_relevant=acuity_data_relevant[acuity_data_relevant$month<=48,]#
+#
+acuity_data_relevant$year_for_graph = ceiling(acuity_data_relevant$month/12)#
+#
+acuity_data_relevant$month_as_factor=as.factor(acuity_data_relevant$month)#
+#
+data(patient_data_and_evaluation)#
+#
+patient_data_and_evaluation$TTB=NA#
+#
+for(thePatient in patient_data_and_evaluation$patient)#
+{#
+#
+		observed=acuity_data_extended$logMAR[acuity_data_extended$patient==thePatient]#
+		expected = acuity_data_extended$logMARnotreatment[acuity_data_extended$patient==thePatient]#
+		patient_data_and_evaluation$TTB[patient_data_and_evaluation$patient==thePatient] = get_treatment_score(#
+			observed=observed,#
+			expected=expected#
+		)#
+}#
+patient_data_and_evaluation$percentage=patient_data_and_evaluation$TTB#
+#
+cat_bounds=seq(from=0, to =1.1, by=0.1)-0.05#
+#
+barcolors=vector(mode="character",length=3)#
+#
+barcolors[1]=grey(0.95)#
+#
+barcolors[2]=grey(0.8)#
+#
+barcolors[3]=grey(0)#
+all_months=seq(from=0,to=48,by=3)#
+#
+initialLogMAR = mean(patient_data_and_evaluation$initialLogMAR)#
+#
+percentage_saved_constant = get_treatment_score(#
+	observed=rep(initialLogMAR,length(all_months)),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+#
+percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+# Plotting figure 3b: vision-year percentages as a function of HTA/DM risk level#
+#
+patient_data_and_evaluation$HTA_DM_risk_level = as.numeric(patient_data_and_evaluation$HTA)+as.numeric(patient_data_and_evaluation$DM)#
+data(natural_history_AMD)#
+patient_data_to_use = patient_data_and_evaluation[!is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.nan(patient_data_and_evaluation$HTA_DM_risk_level) & patient_data_and_evaluation$initialLogMAR>category_mids[1],]#
+#
+risk_text=c("None","Hypertension or Diabetes","Hypertension and Diabetes")#
+#
+drawLines<-function(level,histogram_info,x)#
+{#
+	initialLogMAR<-mean(patient_data_to_use$initialLogMAR)	#
+	initialLogMAR_min<-initialLogMAR-2*sd_mean(patient_data_to_use$initialLogMAR)#
+	all_months=seq(from=0,to=48,by=3)#
+#
+	percentage_saved_desired_array<-desired_treatment_score(initialLogMAR=patient_data_to_use$initialLogMAR,#
+		tmax=max(all_months),k=1,threshold=-log(c(20/60),base=10))#
+#
+	percentage_saved_desired=mean(percentage_saved_desired_array)#
+	percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR_min,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_best_non_treated)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=2,col="black")#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_desired)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=3,col="black")#
+}#
+x_coords=multipleHistograms(#
+	x=patient_data_to_use$percentage,#
+	levels=patient_data_to_use$HTA_DM_risk_level,#
+	breaks=cat_bounds,#
+	barcolors=barcolors,#
+	add.legend=TRUE,#
+	legend.text=risk_text,#
+	cex.axis=1.5,#
+	xlab="Treatment Efficiency",#
+	ylab="Eyes",#
+	FUN=drawLines)#
+test_result=significance_labels(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage))#
+#
+test_result[upper.tri(test_result)]=significance_labels(p.adjust(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage)[upper.tri(test_result)],method="fdr"))#
+#
+test_result#
+# Overall anova#
+#
+patient_data_to_use$risk_level = as.numeric(patient_data_to_use$DM)+as.numeric(patient_data_to_use$HTA)#
+patient_data_to_use$risk_level2 = as.numeric(patient_data_to_use$gender1M2F)+as.numeric(patient_data_to_use$age>mean(patient_data_to_use$age))#
+#
+theModel=lm(percentage ~ risk_level + risk_level2+initialLogMAR, data=patient_data_to_use)#
+summary(theModel)#
+#
+lm(percentage ~ DM+HTA+age+gender1M2F+tabac+initialLogMAR,data=patient_data_to_use)#
+anova(lm(percentage ~ DM+HTA+age+gender1M2F+tabac+initialLogMAR+group2,data=patient_data_to_use))
+patient_data_and_evaluation
+patient_data_and_evaluation$percentage
+data(patient_data_and_evaluation_with_treatment_benefit)
+patient_data_and_evaluation_with_treatment_benefit$TTB
+test_result
+patient_data_and_evaluation_with_treatment_benefit$TTB
+data(acuity_data)#
+data(patient_data_and_evaluation)#
+#
+month_stop=48#
+acuity_data_average = aggregate(data.frame(logMAR=acuity_data$logMAR),by=list(month=acuity_data$month),FUN=mean,na.rm=TRUE)#
+#
+acuity_data_average = acuity_data_average[acuity_data_average$month<=month_stop,]#
+months=acuity_data_average$month[acuity_data_average$month<=month_stop]#
+#
+logMAR=acuity_data_average$logMAR[acuity_data_average$month<=month_stop]#
+#
+logMARinitial = logMAR[months==0]#
+predictedLogMar = predict_logMARevolution_no_treatment(logMARinitial,month_to_evaluate=months)#
+#
+months_extra=c(3,6)+max(months)#
+#
+predictedLogMarExtra =  predict_logMARevolution_no_treatment(logMARinitial,month_to_evaluate=months_extra)#
+#
+plot(#
+	c(months,months_extra)/12,	c(predictedLogMar,predictedLogMarExtra),#
+	main="Overall treatment efficiency",xlab="Years", ylab="log MAR",cex.axis=2,cex.lab=3,type="l",#
+	ylim=c(0,max(c(max(predictedLogMar),max(logMAR)))),xlim=c(0,max(months_extra)/12))#
+polygon(#
+	x=c(months,months[seq(from=length(months),to=1,by=-1)])/12,#
+	y=c(predictedLogMar,logMAR[seq(from=length(months),to=1,by=-1)]),col="GREY",lwd=1)#
+#
+polygon(x=c(0,months/12,months[length(months)]/12,0),y=c(0,predictedLogMar,0,0),lwd=10)#
+#
+plot.xy(xy.coords(#
+	x=months/12,	y=logMAR),#
+	type="b",cex=2,bty="l",pch=21,bg="black"#
+)#
+# Data preparation for Fig. 3b#
+#
+data(natural_history_AMD)#
+data(transition_matrix_natural_history_AMD)#
+data(acuity_data_extended)#
+acuity_data_extended$logMARnotreatment = predict_logMARevolution_no_treatment (acuity_data_extended$initialLogMAR,month_to_evaluate=acuity_data_extended$month)#
+acuity_data_extended$percentage = (acuity_data_extended$logMARnotreatment-acuity_data_extended$logMAR)/acuity_data_extended$logMARnotreatment#
+#
+acuity_data_extended$percentage[acuity_data_extended$percentage<0]=0#
+#
+acuity_data_extended$percentage[acuity_data_extended$month==0]=NA#
+#
+acuity_data_relevant=acuity_data_extended[acuity_data_extended$initialLogMAR>=category_mids[1],]#
+#
+acuity_data_relevant=acuity_data_relevant[acuity_data_relevant$month<=48,]#
+#
+acuity_data_relevant$year_for_graph = ceiling(acuity_data_relevant$month/12)#
+#
+acuity_data_relevant$month_as_factor=as.factor(acuity_data_relevant$month)#
+#
+data(patient_data_and_evaluation)#
+#
+data(patient_data_and_evaluation_with_treatment_benefit)#
+patient_data_and_evaluation$TTB=patient_data_and_evaluation_with_treatment_benefit$TTB#
+patient_data_and_evaluation$percentage=patient_data_and_evaluation$TTB#
+cat_bounds=seq(from=0, to =1.1, by=0.1)-0.05#
+#
+barcolors=vector(mode="character",length=3)#
+#
+barcolors[1]=grey(0.95)#
+#
+barcolors[2]=grey(0.8)#
+#
+barcolors[3]=grey(0)#
+all_months=seq(from=0,to=48,by=3)#
+#
+initialLogMAR = mean(patient_data_and_evaluation$initialLogMAR)#
+#
+percentage_saved_constant = get_treatment_score(#
+	observed=rep(initialLogMAR,length(all_months)),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+#
+percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+# Plotting figure 3b: vision-year percentages as a function of HTA/DM risk level#
+#
+patient_data_and_evaluation$HTA_DM_risk_level = as.numeric(patient_data_and_evaluation$HTA)+as.numeric(patient_data_and_evaluation$DM)#
+data(natural_history_AMD)#
+patient_data_to_use = patient_data_and_evaluation[!is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.nan(patient_data_and_evaluation$HTA_DM_risk_level) & patient_data_and_evaluation$initialLogMAR>category_mids[1],]#
+#
+risk_text=c("None","Hypertension or Diabetes","Hypertension and Diabetes")#
+#
+drawLines<-function(level,histogram_info,x)#
+{#
+	initialLogMAR<-mean(patient_data_to_use$initialLogMAR)	#
+	initialLogMAR_min<-initialLogMAR-2*sd_mean(patient_data_to_use$initialLogMAR)#
+	all_months=seq(from=0,to=48,by=3)#
+#
+	percentage_saved_desired_array<-desired_treatment_score(initialLogMAR=patient_data_to_use$initialLogMAR,#
+		tmax=max(all_months),k=1,threshold=-log(c(20/60),base=10))#
+#
+	percentage_saved_desired=mean(percentage_saved_desired_array)#
+	percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR_min,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_best_non_treated)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=2,col="black")#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_desired)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=3,col="black")#
+}#
+x_coords=multipleHistograms(#
+	x=patient_data_to_use$percentage,#
+	levels=patient_data_to_use$HTA_DM_risk_level,#
+	breaks=cat_bounds,#
+	barcolors=barcolors,#
+	add.legend=TRUE,#
+	legend.text=risk_text,#
+	cex.axis=1.5,#
+	xlab="Treatment Efficiency",#
+	ylab="Eyes",#
+	FUN=drawLines)#
+test_result=significance_labels(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage))#
+#
+test_result[upper.tri(test_result)]=significance_labels(p.adjust(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage)[upper.tri(test_result)],method="fdr"))#
+#
+test_result#
+# Overall anova#
+#
+patient_data_to_use$risk_level = as.numeric(patient_data_to_use$DM)+as.numeric(patient_data_to_use$HTA)#
+patient_data_to_use$risk_level2 = as.numeric(patient_data_to_use$gender1M2F)+as.numeric(patient_data_to_use$age>mean(patient_data_to_use$age))#
+#
+theModel=lm(percentage ~ risk_level + risk_level2+initialLogMAR, data=patient_data_to_use)#
+summary(theModel)#
+#
+lm(percentage ~ DM+HTA+age+gender1M2F+tabac+initialLogMAR,data=patient_data_to_use)#
+anova(lm(percentage ~ DM+HTA+age+gender1M2F+tabac+initialLogMAR+group2,data=patient_data_to_use))
+test_result
+data(natural_history_AMD)#
+data(transition_matrix_natural_history_AMD)#
+data(acuity_data_extended)#
+acuity_data_extended$logMARnotreatment = predict_logMARevolution_no_treatment (acuity_data_extended$initialLogMAR,month_to_evaluate=acuity_data_extended$month)#
+acuity_data_extended$percentage = (acuity_data_extended$logMARnotreatment-acuity_data_extended$logMAR)/acuity_data_extended$logMARnotreatment#
+#
+acuity_data_extended$percentage[acuity_data_extended$percentage<0]=0#
+#
+acuity_data_extended$percentage[acuity_data_extended$month==0]=NA#
+#
+acuity_data_relevant=acuity_data_extended[acuity_data_extended$initialLogMAR>=category_mids[1],]#
+#
+acuity_data_relevant=acuity_data_relevant[acuity_data_relevant$month<=48,]#
+#
+acuity_data_relevant$year_for_graph = ceiling(acuity_data_relevant$month/12)#
+#
+acuity_data_relevant$month_as_factor=as.factor(acuity_data_relevant$month)#
+#
+data(patient_data_and_evaluation)#
+#
+data(patient_data_and_evaluation_with_treatment_benefit)#
+patient_data_and_evaluation$TTB=patient_data_and_evaluation_with_treatment_benefit$TTB#
+patient_data_and_evaluation$percentage=patient_data_and_evaluation$TTB#
+cat_bounds=seq(from=0, to =1.1, by=0.1)-0.05#
+#
+barcolors=vector(mode="character",length=3)#
+#
+barcolors[1]=grey(0.95)#
+#
+barcolors[2]=grey(0.8)#
+#
+barcolors[3]=grey(0)#
+all_months=seq(from=0,to=48,by=3)#
+#
+initialLogMAR = mean(patient_data_and_evaluation$initialLogMAR)#
+#
+percentage_saved_constant = get_treatment_score(#
+	observed=rep(initialLogMAR,length(all_months)),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+#
+percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+# Plotting figure 3b: vision-year percentages as a function of HTA/DM risk level#
+#
+patient_data_and_evaluation$HTA_DM_risk_level = as.numeric(patient_data_and_evaluation$HTA)+as.numeric(patient_data_and_evaluation$DM)#
+data(natural_history_AMD)#
+patient_data_to_use = patient_data_and_evaluation[!is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.nan(patient_data_and_evaluation$HTA_DM_risk_level) & patient_data_and_evaluation$initialLogMAR>category_mids[1],]#
+#
+risk_text=c("None","Hypertension or Diabetes","Hypertension and Diabetes")#
+#
+drawLines<-function(level,histogram_info,x)#
+{#
+	initialLogMAR<-mean(patient_data_to_use$initialLogMAR)	#
+	initialLogMAR_min<-initialLogMAR-2*sd_mean(patient_data_to_use$initialLogMAR)#
+	all_months=seq(from=0,to=48,by=3)#
+#
+	percentage_saved_desired_array<-desired_treatment_score(initialLogMAR=patient_data_to_use$initialLogMAR,#
+		tmax=max(all_months),k=1,threshold=-log(c(20/60),base=10))#
+#
+	percentage_saved_desired=mean(percentage_saved_desired_array)#
+	percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR_min,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_best_non_treated)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=2,col="black")#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_desired)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=3,col="black")#
+}#
+x_coords=multipleHistograms(#
+	x=patient_data_to_use$percentage,#
+	levels=patient_data_to_use$HTA_DM_risk_level,#
+	breaks=cat_bounds,#
+	barcolors=barcolors,#
+	add.legend=TRUE,#
+	legend.text=risk_text,#
+	cex.axis=1.5,#
+	xlab="Treatment Efficiency",#
+	ylab="Eyes",#
+	FUN=drawLines)#
+test_result=significance_labels(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage))#
+#
+test_result[upper.tri(test_result)]=significance_labels(p.adjust(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage)[upper.tri(test_result)],method="fdr"))#
+#
+test_result#
+# Overall anova#
+#
+patient_data_to_use$risk_level = as.numeric(patient_data_to_use$DM)+as.numeric(patient_data_to_use$HTA)#
+patient_data_to_use$risk_level2 = as.numeric(patient_data_to_use$gender1M2F)+as.numeric(patient_data_to_use$age>mean(patient_data_to_use$age))#
+#
+theModel=lm(percentage ~ risk_level + risk_level2+initialLogMAR, data=patient_data_to_use)#
+summary(theModel)#
+#
+lm(percentage ~ DM+HTA+age+gender1M2F+tabac+initialLogMAR,data=patient_data_to_use)#
+anova(lm(percentage ~ DM+HTA+age+gender1M2F+tabac+initialLogMAR+group2,data=patient_data_to_use))
+cat_bounds
+rm(list=ls())
+# Data preparation for Fig. 3b#
+#
+data(natural_history_AMD)#
+data(transition_matrix_natural_history_AMD)#
+data(acuity_data_extended)#
+acuity_data_extended$logMARnotreatment = predict_logMARevolution_no_treatment (acuity_data_extended$initialLogMAR,month_to_evaluate=acuity_data_extended$month)#
+acuity_data_extended$percentage = (acuity_data_extended$logMARnotreatment-acuity_data_extended$logMAR)/acuity_data_extended$logMARnotreatment#
+#
+acuity_data_extended$percentage[acuity_data_extended$percentage<0]=0#
+#
+acuity_data_extended$percentage[acuity_data_extended$month==0]=NA#
+#
+acuity_data_relevant=acuity_data_extended[acuity_data_extended$initialLogMAR>=category_mids[1],]#
+#
+acuity_data_relevant=acuity_data_relevant[acuity_data_relevant$month<=48,]#
+#
+acuity_data_relevant$year_for_graph = ceiling(acuity_data_relevant$month/12)#
+#
+acuity_data_relevant$month_as_factor=as.factor(acuity_data_relevant$month)#
+#
+data(patient_data_and_evaluation)#
+#
+data(patient_data_and_evaluation_with_treatment_benefit)#
+patient_data_and_evaluation$TTB=patient_data_and_evaluation_with_treatment_benefit$TTB#
+patient_data_and_evaluation$percentage=patient_data_and_evaluation$TTB#
+cat_bounds=seq(from=0, to =1.1, by=0.1)-0.05#
+#
+cat_bounds[1]=-10#
+#
+barcolors=vector(mode="character",length=3)#
+#
+barcolors[1]=grey(0.95)#
+#
+barcolors[2]=grey(0.8)#
+#
+barcolors[3]=grey(0)#
+all_months=seq(from=0,to=48,by=3)#
+#
+initialLogMAR = mean(patient_data_and_evaluation$initialLogMAR)#
+#
+percentage_saved_constant = get_treatment_score(#
+	observed=rep(initialLogMAR,length(all_months)),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+#
+percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+# Plotting figure 3b: vision-year percentages as a function of HTA/DM risk level#
+#
+patient_data_and_evaluation$HTA_DM_risk_level = as.numeric(patient_data_and_evaluation$HTA)+as.numeric(patient_data_and_evaluation$DM)#
+data(natural_history_AMD)#
+patient_data_to_use = patient_data_and_evaluation[!is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.nan(patient_data_and_evaluation$HTA_DM_risk_level) & patient_data_and_evaluation$initialLogMAR>category_mids[1],]#
+#
+risk_text=c("None","Hypertension or Diabetes","Hypertension and Diabetes")#
+#
+drawLines<-function(level,histogram_info,x)#
+{#
+	initialLogMAR<-mean(patient_data_to_use$initialLogMAR)	#
+	initialLogMAR_min<-initialLogMAR-2*sd_mean(patient_data_to_use$initialLogMAR)#
+	all_months=seq(from=0,to=48,by=3)#
+#
+	percentage_saved_desired_array<-desired_treatment_score(initialLogMAR=patient_data_to_use$initialLogMAR,#
+		tmax=max(all_months),k=1,threshold=-log(c(20/60),base=10))#
+#
+	percentage_saved_desired=mean(percentage_saved_desired_array)#
+	percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR_min,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_best_non_treated)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=2,col="black")#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_desired)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=3,col="black")#
+}#
+x_coords=multipleHistograms(#
+	x=patient_data_to_use$percentage,#
+	levels=patient_data_to_use$HTA_DM_risk_level,#
+	breaks=cat_bounds,#
+	barcolors=barcolors,#
+	add.legend=TRUE,#
+	legend.text=risk_text,#
+	cex.axis=1.5,#
+	xlab="Treatment Efficiency",#
+	ylab="Eyes",#
+	FUN=drawLines)#
+test_result=significance_labels(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage))#
+#
+test_result[upper.tri(test_result)]=significance_labels(p.adjust(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage)[upper.tri(test_result)],method="fdr"))#
+#
+test_result#
+# Overall anova#
+#
+patient_data_to_use$risk_level = as.numeric(patient_data_to_use$DM)+as.numeric(patient_data_to_use$HTA)#
+patient_data_to_use$risk_level2 = as.numeric(patient_data_to_use$gender1M2F)+as.numeric(patient_data_to_use$age>mean(patient_data_to_use$age))#
+#
+theModel=lm(percentage ~ risk_level + risk_level2+initialLogMAR, data=patient_data_to_use)#
+summary(theModel)#
+#
+lm(percentage ~ DM+HTA+age+gender1M2F+tabac+initialLogMAR,data=patient_data_to_use)#
+anova(lm(percentage ~ DM+HTA+age+gender1M2F+tabac+initialLogMAR+group2,data=patient_data_to_use))
+# Data preparation for Fig. 3b#
+#
+data(natural_history_AMD)#
+data(transition_matrix_natural_history_AMD)#
+data(acuity_data_extended)#
+acuity_data_extended$logMARnotreatment = predict_logMARevolution_no_treatment (acuity_data_extended$initialLogMAR,month_to_evaluate=acuity_data_extended$month)#
+acuity_data_extended$percentage = (acuity_data_extended$logMARnotreatment-acuity_data_extended$logMAR)/acuity_data_extended$logMARnotreatment#
+#
+acuity_data_extended$percentage[acuity_data_extended$percentage<0]=0#
+#
+acuity_data_extended$percentage[acuity_data_extended$month==0]=NA#
+#
+acuity_data_relevant=acuity_data_extended[acuity_data_extended$initialLogMAR>=category_mids[1],]#
+#
+acuity_data_relevant=acuity_data_relevant[acuity_data_relevant$month<=48,]#
+#
+acuity_data_relevant$year_for_graph = ceiling(acuity_data_relevant$month/12)#
+#
+acuity_data_relevant$month_as_factor=as.factor(acuity_data_relevant$month)#
+#
+data(patient_data_and_evaluation)#
+#
+data(patient_data_and_evaluation_with_treatment_benefit)#
+patient_data_and_evaluation$TTB=patient_data_and_evaluation_with_treatment_benefit$TTB#
+patient_data_and_evaluation$percentage=patient_data_and_evaluation$TTB#
+cat_bounds=seq(from=0, to =1.1, by=0.1)-0.05#
+#
+cat_bounds[1]=-10#
+#
+barcolors=vector(mode="character",length=3)#
+#
+barcolors[1]=grey(0.95)#
+#
+barcolors[2]=grey(0.8)#
+#
+barcolors[3]=grey(0)#
+all_months=seq(from=0,to=48,by=3)#
+#
+initialLogMAR = mean(patient_data_and_evaluation$initialLogMAR)#
+#
+percentage_saved_constant = get_treatment_score(#
+	observed=rep(initialLogMAR,length(all_months)),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+#
+percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+# Plotting figure 3b: vision-year percentages as a function of HTA/DM risk level#
+#
+patient_data_and_evaluation$HTA_DM_risk_level = as.numeric(patient_data_and_evaluation$HTA)+as.numeric(patient_data_and_evaluation$DM)#
+data(natural_history_AMD)#
+patient_data_to_use = patient_data_and_evaluation[!is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.na(patient_data_and_evaluation$HTA_DM_risk_level) & !is.nan(patient_data_and_evaluation$HTA_DM_risk_level) & patient_data_and_evaluation$initialLogMAR>category_mids[1],]#
+#
+risk_text=c("None","Hypertension or Diabetes","Hypertension and Diabetes")#
+#
+drawLines<-function(level,histogram_info,x)#
+{#
+	initialLogMAR<-mean(patient_data_to_use$initialLogMAR)	#
+	initialLogMAR_min<-initialLogMAR-2*sd_mean(patient_data_to_use$initialLogMAR)#
+	all_months=seq(from=0,to=48,by=3)#
+#
+	percentage_saved_desired_array<-desired_treatment_score(initialLogMAR=patient_data_to_use$initialLogMAR,#
+		tmax=max(all_months),k=1,threshold=-log(c(20/60),base=10))#
+#
+	percentage_saved_desired=mean(percentage_saved_desired_array)#
+	percentage_saved_best_non_treated = get_treatment_score(#
+	observed=predict_logMARevolution_no_treatment(initialLogMAR_min,month_to_evaluate=all_months,transition_matrix=transition_matrix_natural_history_AMD_best_case),#
+	expected=predict_logMARevolution_no_treatment(initialLogMAR,month_to_evaluate=all_months))#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_best_non_treated)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=2,col="black")#
+	x_to_draw<-approx(x=histogram_info$mids,y=x,xout=percentage_saved_desired)$y#
+	y_to_draw=max(histogram_info$counts)#
+	lines(c(x_to_draw,x_to_draw),c(0,y_to_draw),lty=3,col="black")#
+}#
+x_coords=multipleHistograms(#
+	x=patient_data_to_use$percentage,#
+	levels=patient_data_to_use$HTA_DM_risk_level,#
+	breaks=cat_bounds,#
+	barcolors=barcolors,#
+	add.legend=TRUE,#
+	legend.text=risk_text,#
+	cex.axis=1.5,#
+	xlab="Treatment Efficiency",#
+	ylab="Eyes",#
+	FUN=drawLines)#
+test_result=significance_labels(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage))#
+#
+test_result[upper.tri(test_result)]=significance_labels(p.adjust(get_t_test_matrix(treatment_factor=patient_data_to_use$HTA_DM_risk_level,data=patient_data_to_use$percentage)[upper.tri(test_result)],method="fdr"))#
+#
+test_result#
+# Overall anova#
+#
+patient_data_to_use$risk_level = as.numeric(patient_data_to_use$DM)+as.numeric(patient_data_to_use$HTA)#
+patient_data_to_use$risk_level2 = as.numeric(patient_data_to_use$gender1M2F)+as.numeric(patient_data_to_use$age>mean(patient_data_to_use$age))#
+#
+theModel=lm(percentage ~ risk_level + risk_level2+initialLogMAR, data=patient_data_to_use)#
+summary(theModel)#
+#
+lm(percentage ~ initialLogMAR +DM+HTA+age+gender1M2F+tabac,data=patient_data_to_use)#
+anova(lm(percentage ~ DM+HTA+age+gender1M2F+tabac+initialLogMAR+group2,data=patient_data_to_use))
+data(patient_data_and_evaluation)#
+data(acuity_data_extended)#
+acuity_data = acuity_data_extended#
+#
+patient_data_and_evaluation$lastLogMAR = NA#
+#
+patient_data_and_evaluation$logMAR15 = NA#
+#
+acuity_data_extended$risk_level2 = acuity_data_extended$age>mean(patient_data_and_evaluation$age)#
+#
+patient_data_and_evaluation$risk_level2 = patient_data_and_evaluation$age>mean(patient_data_and_evaluation$age)#
+injections_early = aggregate(injections ~ patient, acuity_data[acuity_data$month<=15,],FUN=mean, na.rm=TRUE)#
+#
+injections_late = aggregate(injections ~ patient, acuity_data[acuity_data$month>15,],FUN=mean, na.rm=TRUE)#
+patient_data_and_evaluation$mean_injections_early = injections_early$injections[match(patient_data_and_evaluation$patient,injections_early$patient)]#
+patient_data_and_evaluation$mean_injections_late = injections_late$injections[match(patient_data_and_evaluation$patient,injections_late$patient)]#
+changeover = 15#
+#
+for(thePatient in patient_data_and_evaluation$patient)#
+{#
+    patient_data_and_evaluation$lastLogMAR[patient_data_and_evaluation$patient==thePatient]=#
+    acuity_data$logMAR[acuity_data$month==min(c(48,patient_data_and_evaluation$months_observed[patient_data_and_evaluation$patient==thePatient])) & acuity_data$patient==thePatient]#
+    patient_data_and_evaluation$logMAR15[patient_data_and_evaluation$patient==thePatient] = acuity_data$logMAR[acuity_data$month==changeover & acuity_data$patient==thePatient]#
+}#
+#
+patient_data_and_evaluation$duration = patient_data_and_evaluation$months_observed-changeover#
+patient_data_and_evaluation$secondSlope = (patient_data_and_evaluation$lastLogMAR-patient_data_and_evaluation$logMAR15)#
+patient_data_and_evaluation$firstSlope = (patient_data_and_evaluation$logMAR15-patient_data_and_evaluation$initialLogMAR)#
+patient_data_and_evaluation$ageF = patient_data_and_evaluation$age>mean(patient_data_and_evaluation$age)#
+patient_data_and_evaluation$smoking = patient_data_and_evaluation$tabac>0#
+multivariate_early=lm(firstSlope ~  initialLogMAR+DM+HTA+risk_level2+gender1M2F+smoking+group2,patient_data_and_evaluation)#
+#
+multivariate_late=lm(secondSlope ~ initialLogMAR+DM+HTA+risk_level2+gender1M2F+smoking+group2 ,patient_data_and_evaluation)#
+anova(multivariate_early)#
+#
+anova(multivariate_late) #
+#
+anv=anova(multivariate_early)#
+#
+variance_explained_early = anv[-dim(anv)[1],"Sum Sq"]/anv[dim(anv)[1],"Sum Sq"]#
+#
+names(variance_explained_early) = rownames(anv)[-dim(anv)[1]]#
+round(variance_explained_early*1e4)/100 #
+anv=anova(multivariate_late)#
+#
+variance_explained_late = anv[-dim(anv)[1],"Sum Sq"]/anv[dim(anv)[1],"Sum Sq"]#
+#
+names(variance_explained_late) = rownames(anv)[-dim(anv)[1]]#
+round(variance_explained_late*1e4)/100
+# Same analysis, using the slope#
+# ------------------------------------------------------------------------------------------------------------#
+#
+data(acuity_data_extended)#
+#
+changeover=15#
+#
+data(patient_data_and_evaluation)#
+ acuity_data_extended$injections_category = as.numeric(acuity_data_extended$injections > #
+            1)#
+acuity_data_extended$risk_level = acuity_data_extended$HTA +acuity_data_extended$DM#
+acuity_data_extended$risk_level2 = acuity_data_extended$age>mean(patient_data_and_evaluation$age)#
+acuity_data_extended$smoking = acuity_data_extended$tabac>0#
+acuity_15=acuity_data_extended[acuity_data_extended$month<=changeover & acuity_data_extended$month>0 ,]#
+acuity_48=acuity_data_extended[acuity_data_extended$month>changeover & acuity_data_extended$month<=48 ,]#
+#
+acuity_15=acuity_15[!is.na(acuity_15$risk_level) & !is.na(acuity_15$injections_category),]#
+acuity_48=acuity_48[!is.na(acuity_48$risk_level) &! is.na(acuity_48$injections_category),]#
+#
+acuity_15$period=15#
+acuity_48$period=48#
+#
+acuity_all = rbind(acuity_15,acuity_48)#
+m15=lm(slope ~ initialLogMAR+DM+HTA+risk_level2+gender1M2F+smoking+injections_category,acuity_15)#
+#
+m48=lm(slope ~ initialLogMAR+DM+HTA+risk_level2+gender1M2F+smoking+injections_category,acuity_48)#
+#
+m_overall=lm(slope ~ initialLogMAR+DM+HTA+risk_level2+gender1M2F+smoking+injections_category,acuity_all)#
+#
+anv15 = anova_moulton(m15,acuity_15,"patient")#
+anv48 = anova_moulton(m48,acuity_48,"patient")#
+anv_overall = anova_moulton(m_overall,acuity_all,"patient") #
+#
+# Exclude the period from the overall P-value#
+#
+df1=attr(anv_overall,"df1")#
+df2=attr(anv_overall,"df2")#
+#
+# Do not include the assay period, used in the regression to account for time differences, into the F calculation#
+df1=df1[1:(length(df1)-1)]#
+df2=df2[1:(length(df2)-1)]#
+#
+overall_F =  mean(anv_overall[1:(dim(anv_overall)[1]-2), "F value"]*df1)/mean(df1)#
+#
+overall_pval = pf(overall_F,mean(df1),mean(df2*df1)/mean(df1),lower.tail=FALSE)#
+#
+pvals=matrix(nrow=3,ncol=8)#
+#
+rownames(pvals)=c(15,48,"overall")#
+#
+colnames(pvals)=c("initialLogMAR","DM","HTA","age","gender","smoking","injections","overall")#
+#
+var_explained = pvals#
+#
+n=dim(pvals)[1]#
+m=dim(pvals)[2]#
+ssq_15 = anv15[,"Sum Sq"]#
+ssq_15 = ssq_15[-length(ssq_15)]/ssq_15[length(ssq_15)]#
+var_explained["15",]=c(ssq_15,sum(ssq_15))#
+ssq_48 = anv48[,"Sum Sq"]#
+ssq_48 = ssq_48[-length(ssq_48)]/ssq_48[length(ssq_48)]#
+var_explained["48",]=c(ssq_48,sum(ssq_48))#
+#
+ssq_overall = anv_overall[,"Sum Sq"]#
+ssq_overall = ssq_overall[1:n]/ssq_overall[length(ssq_overall)]#
+var_explained["overall",]=c(ssq_overall,sum(ssq_overall))#
+#
+pvals["15",]=anv15[,"Pr(>F)"]#
+pvals["15","overall"]=attr(anv15,"overall_fstatistics")["Pr(>F)"]#
+pvals["48",]=anv48[,"Pr(>F)"]#
+pvals["48","overall"]=attr(anv48,"overall_fstatistics")["Pr(>F)"]#
+pvals["overall",1:(dim(anv_overall)[1]-1)] = anv_overall[1:(dim(anv_overall)[1]-1),"Pr(>F)"]#
+pvals["overall","overall"]=overall_pval#
+#
+# Multiple testing adjustment#
+pvals_adjusted=pvals#
+#
+pvals_adjusted[1:(n-1),"overall"]=p.adjust(pvals_adjusted[1:(n-1),"overall"],"fdr")#
+pvals_adjusted["overall",1:(m-1)]=p.adjust(pvals_adjusted["overall",1:(m-1)],"fdr")#
+pvals_adjusted#
+#
+significance_labels(pvals_adjusted)
+get_treatment_score
+min(patient_data_and_evaluation$TTB)
+min(patient_data_and_evaluation$TTB,na.rm=TRUE)
+data(patient_data_and_evaluation_with_treatment_benefit)
+min(patient_data_and_evaluation_with_treatment_benefit $TTB,na.rm=TRUE)
+data(natural_history_AMD)#
+data(acuity_data_extended)#
+#
+data(transition_matrix_natural_history_AMD)#
+acuity_data_extended$logMARnotreatment = predict_logMARevolution_no_treatment (acuity_data_extended$initialLogMAR,month_to_evaluate=acuity_data_extended$month)#
+#
+acuity_data_relevant=acuity_data_extended[acuity_data_extended$month<=48,]#
+#
+acuity_data_increased = acuity_data_relevant#
+#
+acuity_data_increased$logMAR[acuity_data_increased$month>0]=acuity_data_increased$logMAR[acuity_data_increased$month>0]+0.1#
+#
+acuity_data_short=acuity_data_extended[acuity_data_extended$month<=24,]#
+#
+data(patient_data_and_evaluation)#
+patient_data_and_evaluation$TTB=NA#
+patient_data_and_evaluation$deltaLogMAR24=NA#
+#
+for(thePatient in patient_data_and_evaluation$patient)#
+{#
+#
+# Standard treatment benefit#
+#
+		observed=acuity_data_relevant$logMAR[acuity_data_relevant$patient==thePatient]#
+		expected = acuity_data_relevant$logMARnotreatment[acuity_data_relevant$patient==thePatient]#
+		patient_data_and_evaluation$TTB[patient_data_and_evaluation$patient==thePatient] = get_treatment_score(#
+			observed=observed,#
+			expected=expected,limitToInterval_0_1=FALSE#
+		)#
+# Considering only the 24 first months		#
+		observed=acuity_data_short$logMAR[acuity_data_short$patient==thePatient]#
+		expected = acuity_data_short$logMARnotreatment[acuity_data_short$patient==thePatient]#
+		patient_data_and_evaluation$TTB_short[patient_data_and_evaluation$patient==thePatient] = get_treatment_score(#
+			observed=observed,#
+			expected=expected,limitToInterval_0_1=FALSE#
+		)#
+# Artificial increase in logMAR VA by 0.1 units#
+observed=acuity_data_increased$logMAR[acuity_data_increased$patient==thePatient]#
+		expected = acuity_data_relevant$logMARnotreatment[acuity_data_relevant$patient==thePatient]#
+		patient_data_and_evaluation$TTB_increased[patient_data_and_evaluation$patient==thePatient] = get_treatment_score(#
+			observed=observed,#
+			expected=expected,limitToInterval_0_1=FALSE#
+		)#
+		patient_data_and_evaluation$deltaLogMAR24[patient_data_and_evaluation$patient==thePatient] = acuity_data_extended$logMARNormalized[acuity_data_extended$patient==thePatient & acuity_data_extended$month==24]#
+}#
+#
+data(patient_data_and_evaluation_with_treatment_benefit)
+plot(patient_data_and_evaluation$TTB)
+plot(patient_data_and_evaluation$TTB, patient_data_and_evaluation_with_treatment_benefit$TTB)
+plot(patient_data_and_evaluation$TTB, patient_data_and_evaluation_with_treatment_benefit$TTB,xlim=c(0,1))
+anvTTB=anova(lm(TTB ~ initialLogMAR, patient_data_and_evaluation[patient_data_and_evaluation$initialLogMAR>category_mids[1],]))#
+anvTTB[,"Sum Sq"]/sum(anvTTB[,"Sum Sq"])
+anvTTB
+anvDelta=anova(lm(deltaLogMAR24 ~ initialLogMAR, patient_data_and_evaluation))#
+anvDelta[,"Sum Sq"]/sum(anvDelta[,"Sum Sq"])
+anvDelta
+data(patient_data_and_evaluation_with_treatment_benefit)#
+#
+anvTTB=anova(lm(TTB ~ initialLogMAR, patient_data_and_evaluation_with_treatment_benefit))#
+anvTTB[,"Sum Sq"]/sum(anvTTB[,"Sum Sq"])
+anvTTB
+anvTTB=anova(lm(TTB ~ months_observed, patient_data_and_evaluation_with_treatment_benefit))#
+anvTTB#
+anvTTB[,"Sum Sq"]/sum(anvTTB[,"Sum Sq"])
+mean(patient_data_and_evaluation_with_treatment_benefit$TTB)
+mean(patient_data_and_evaluation_with_treatment_benefit$TTB,na.rm=TRUE)
+t.test(patient_data_and_evaluation$TTB[patient_data_and_evaluation$months_observed>=48],patient_data_and_evaluation$TTB_short[patient_data_and_evaluation$months_observed>=48],paired=TRUE)
+data(acuity_data_extended)#
+#
+acuity_data_extended=acuity_data_extended[acuity_data_extended$month<=48,]#
+# We look here for the first time the eyes exceed VA at baseline again#
+#
+survival_index <-function(x){#
+	x<<-x#
+	if(any(x>x[1]))#
+	{ret=min(which(x>x[1] ))} else {#
+	ret=NA#
+	}#
+	}#
+# Time to event structure#
+s=aggregate(acuity_data_extended$logMAR,by=data.frame(patient=acuity_data_extended$patient),FUN=survival_index)#
+#
+s$status=1#
+s$status[is.na(s$x)]=0#
+#
+s$x=s$x*3#
+#
+data(patient_data_and_evaluation)#
+#
+patient_data_and_evaluation$time_to_baseline = s$x[match(patient_data_and_evaluation$patient,s$patient)]#
+patient_data_and_evaluation$status = s$status[match(patient_data_and_evaluation$patient,s$patient)]#
+#
+# If the logMAR does not reach baseline anymore, it's right censored#
+patient_data_and_evaluation$time_to_baseline[is.na(patient_data_and_evaluation$time_to_baseline)]=patient_data_and_evaluation$months_observed[is.na(patient_data_and_evaluation$time_to_baseline)]#
+#
+patient_data_and_evaluation$time_to_baseline[patient_data_and_evaluation$time_to_baseline>=48]=48#
+#
+survival_model = with(patient_data_and_evaluation,Surv(time_to_baseline,status))#
+#
+fit=coxph(survival_model ~ DM+HTA, patient_data_and_evaluation)
+library(survival)
+data(acuity_data_extended)#
+#
+acuity_data_extended=acuity_data_extended[acuity_data_extended$month<=48,]#
+# We look here for the first time the eyes exceed VA at baseline again#
+#
+survival_index <-function(x){#
+	x<<-x#
+	if(any(x>x[1]))#
+	{ret=min(which(x>x[1] ))} else {#
+	ret=NA#
+	}#
+	}#
+# Time to event structure#
+s=aggregate(acuity_data_extended$logMAR,by=data.frame(patient=acuity_data_extended$patient),FUN=survival_index)#
+#
+s$status=1#
+s$status[is.na(s$x)]=0#
+#
+s$x=s$x*3#
+#
+data(patient_data_and_evaluation)#
+#
+patient_data_and_evaluation$time_to_baseline = s$x[match(patient_data_and_evaluation$patient,s$patient)]#
+patient_data_and_evaluation$status = s$status[match(patient_data_and_evaluation$patient,s$patient)]#
+#
+# If the logMAR does not reach baseline anymore, it's right censored#
+patient_data_and_evaluation$time_to_baseline[is.na(patient_data_and_evaluation$time_to_baseline)]=patient_data_and_evaluation$months_observed[is.na(patient_data_and_evaluation$time_to_baseline)]#
+#
+patient_data_and_evaluation$time_to_baseline[patient_data_and_evaluation$time_to_baseline>=48]=48#
+#
+survival_model = with(patient_data_and_evaluation,Surv(time_to_baseline,status))#
+#
+fit=coxph(survival_model ~ DM+HTA, patient_data_and_evaluation)
+fit
+data(acuity_data_extended)#
+#
+acuity_data_extended=acuity_data_extended[acuity_data_extended$month<=48,]#
+# We look here for the first time the eyes exceed VA at baseline again#
+#
+survival_index <-function(x){#
+	x<<-x#
+	if(any(x>x[1]))#
+	{ret=min(which(x>x[1] ))} else {#
+	ret=NA#
+	}#
+	}#
+# Time to event structure#
+s=aggregate(acuity_data_extended$logMAR,by=data.frame(patient=acuity_data_extended$patient),FUN=survival_index)#
+#
+s$status=1#
+s$status[is.na(s$x)]=0#
+#
+s$x=s$x*3#
+#
+data(patient_data_and_evaluation)#
+#
+patient_data_and_evaluation$time_to_baseline = s$x[match(patient_data_and_evaluation$patient,s$patient)]#
+patient_data_and_evaluation$status = s$status[match(patient_data_and_evaluation$patient,s$patient)]#
+#
+# If the logMAR does not reach baseline anymore, it's right censored#
+patient_data_and_evaluation$time_to_baseline[is.na(patient_data_and_evaluation$time_to_baseline)]=patient_data_and_evaluation$months_observed[is.na(patient_data_and_evaluation$time_to_baseline)]#
+#
+patient_data_and_evaluation$time_to_baseline[patient_data_and_evaluation$time_to_baseline>=48]=48#
+#
+survival_model = with(patient_data_and_evaluation,Surv(time_to_baseline,status))#
+#
+fit=coxph(survival_model ~ HTA, patient_data_and_evaluation)#
+#
+anova(fit)
+data(acuity_data_extended)#
+data(patient_data_and_evaluation_with_treatment_benefit)#
+#
+acuity_data_extended=acuity_data_extended[acuity_data_extended$month<=48,]#
+# We look here for the first time the eyes exceed VA at baseline again#
+#
+survival_index <-function(x){#
+	x<<-x#
+	if(any(x>x[1]))#
+	{ret=min(which(x>x[1] ))} else {#
+	ret=NA#
+	}#
+	}#
+# Time to event structure#
+s=aggregate(acuity_data_extended$logMAR,by=data.frame(patient=acuity_data_extended$patient),FUN=survival_index)#
+#
+s$status=1#
+s$status[is.na(s$x)]=0#
+#
+s$x=s$x*3#
+#
+data(patient_data_and_evaluation_with_treatment_benefit)#
+#
+patient_data_and_evaluation_with_treatment_benefit$time_to_baseline = s$x[match(patient_data_and_evaluation_with_treatment_benefit$patient,s$patient)]#
+patient_data_and_evaluation_with_treatment_benefit$status = s$status[match(patient_data_and_evaluation_with_treatment_benefit$patient,s$patient)]#
+#
+# If the logMAR does not reach baseline anymore, it's right censored#
+patient_data_and_evaluation_with_treatment_benefit$time_to_baseline[is.na(patient_data_and_evaluation_with_treatment_benefit$time_to_baseline)]=patient_data_and_evaluation_with_treatment_benefit$months_observed[is.na(patient_data_and_evaluation_with_treatment_benefit$time_to_baseline)]#
+#
+patient_data_and_evaluation_with_treatment_benefit$time_to_baseline[patient_data_and_evaluation_with_treatment_benefit$time_to_baseline>=48]=48#
+#
+survival_model = with(patient_data_and_evaluation_with_treatment_benefit,Surv(time_to_baseline,status))#
+#
+fit=coxph(survival_model ~ HTA, patient_data_and_evaluation_with_treatment_benefit)#
+#
+anova(fit)
+fit_TTB = lm(TTB ~ HTA, patient_data_and_evaluation_with_treatment_benefit)
+anova(fit_TTB)
+help(pwr)
+library(pwr)
+help(pwr)
+help(pwr.f2.test)
+pwr.f2.test(u=5,v=89,f2=0.1/(1-0.1),sig.level=0.05)
+pwr.f2.test
+pwr.f2.test(u=1,v=89,f2=0.1/(1-0.1),sig.level=0.05)
+help(pwr.f2.test)
+pwr.f2.test(u=1,v=100,f2=8.3,sig.level=0.05)
+help(pf)
+help(pwr)
+help(pwr.anova.test)
+pwr.anova.test
+anova(fit_TTB)
+F_val = anova(fit_TTB)["HTA","F value"]
+F_val
+pf(F_val,df1,df2,lower=FALSE)
+F_val
+F_val = anova(fit_TTB)["HTA","F value"]#
+df1 = anova(fit_TTB)["HTA","df"]#
+df2 = anova(fit_TTB)["Residuals","df"]#
+#
+pf(F_val,df1,df2,lower=FALSE)
+df1
+fit_TTB = lm(TTB ~ HTA, patient_data_and_evaluation_with_treatment_benefit)#
+F_val = anova(fit_TTB)["HTA","F value"]#
+df1 = anova(fit_TTB)["HTA","Df"]#
+df2 = anova(fit_TTB)["Residuals","Df"]#
+#
+pf(F_val,df1,df2,lower=FALSE)
+pf
+cutoff = qf(0.05,df1,df2)
+cutoff
+cutoff = qf(0.05,df1,df2,lower=FALSE)
+cutoff
+help(pf)
+pf(cutoff,df1,df2)
+pf(cutoff,df1,df2,lower=FALSE)
+pf(cutoff,df1,df2,lower=FALSE,ncp=1)
+pf(cutoff,df1,df2,lower=FALSE,ncp=F_val)
+pf(cutoff,df1,df2,lower=FALSE,ncp=F_val-df1)
+power.t.test
+power.t.test(delta=0.11,sd=1,n=50)
+power.t.test(delta=0.11,sd=0.22,n=50)
+power.t.test(delta=0.11,sd=0.22,n=50,alternative="one.sided")
+fit_TTB = lm(TTB ~ HTA, patient_data_and_evaluation_with_treatment_benefit)
+summary(fit_TTB)
+anova(fit_TTB)
+-2.888^2
+t.test(TTB ~ HTA, patient_data_and_evaluation_with_treatment_benefit)
+pf(cutoff,df1,df2,lower=FALSE,ncp=F_val-df1)
+anova(fit)
+help(power)
+help(pwr)
+help(pwr.chisq.test)
+pwr.chisq.test(w = 0, N = 1, df = 1, sig.level = 0.05, power = NULL)
+pwr.chisq.test(w = 10, N = 1, df = 1, sig.level = 0.05, power = NULL)
+pwr.chisq.test(w = 1, N = 1, df = 1, sig.level = 0.05, power = NULL)
+help(pwr.chisq.test)
+help(pf)
+qf(0.5,1,100)
+qf(0.5,1,1000)
+qf(0.5,10,1000)
+qf(0.5,100,1000)
+anova(fit)
+pchisq(2.113,1)
+cutoff=qchisq(0.05,df,lower=FALSE)
+Chi_val = anova(fit)["HTA","Chisq"]#
+df = anova(Df)["HTA","Chisq"]#
+#
+cutoff=qchisq(0.05,df,lower=FALSE)
+df
+Chi_val = anova(fit)["HTA","Chisq"]#
+df = anova(fit)["HTA","Df"]#
+#
+cutoff=qchisq(0.05,df,lower=FALSE)
+cutoff
+Chi_val = anova(fit)["HTA","Chisq"]#
+df = anova(fit)["HTA","Df"]#
+#
+cutoff=qchisq(0.05,df,lower=FALSE)#
+lambda = Chi_val-df1 # The expectation value of the noncentral F-distribution is lambda+df1#
+pchisq(cutoff,df,lower=FALSE,ncp=lambda)
+fit
+pnorm(1.41)
+2*pnorm(1.41)
+2-2*pnorm(1.41)
+t.test(time_to_baseline ~ HTA, patient_data_and_evaluation_with_treatment_benefit)
+t.test(time_to_baseline ~ HTA, patient_data_and_evaluation_with_treatment_benefit[patient_data_and_evaluation_with_treatment_benefit$status==0])
+t.test(time_to_baseline ~ HTA, patient_data_and_evaluation_with_treatment_benefit[patient_data_and_evaluation_with_treatment_benefit$status==0,])
+t.test(time_to_baseline ~ HTA, patient_data_and_evaluation_with_treatment_benefit[patient_data_and_evaluation_with_treatment_benefit$status==1,])
+t.test(status ~ HTA, patient_data_and_evaluation_with_treatment_benefit)
+library(textureAnalyzerGels)#
+library(gdata)#
+#rm(list=ls())#
+# Patrick: root_folder="C:\\Users\\burch\\Google Drive\\Amelie-Patrick-Thomas\\Volumina\\Mechanical Testing\\Materials\\CMC_concentration\\texture analyser\\2016_08_30"#
+root_folder = "/Users/thomasbraschler/Google Drive/Amelie-Patrick-Thomas/Volumina/Mechanical Testing/Materials/CMC_concentration/texture analyser/2016_08_30"#
+setwd(root_folder)#
+# Patrick: use#
+# file_info = read.xls("file listing.xlsx" ,perl="C:\\Perl64\\bin\\perl.exe")#
+file_info = read.xls("file listing.xlsx" )#
+load("blank.rda")#
+all_data=read_texture_analyzer_tab_list(file_info,root_folder,folder_column="Folder",file_column="File",chuck_diameter_column="diameter_mm",sd=0.05,boundary_extension_mm=0.2,lm_region_upper_mm=0.05)#
+index_file = 1#
+for(index_file in 1:(dim(file_info)[1]))#
+{#
+theFile = file_info[index_file,]#
+theData=all_data[[index_file]]#
+theData$pressure_reduced = theData$pressure - theBlank$pressure[match(paste(theData$Distance,theData$direction),paste(theBlank$Distance,theBlank$direction))]#
+theData$pressureSlope_reduced = theData$pressureSlope - theBlank$pressureSlope[match(paste(theData$Distance,theData$direction),paste(theBlank$Distance,theBlank$direction))]#
+theData$height = theFile$start_height_mm-theData$Distance#
+plot(theData$Distance, theData$pressure, xlab="Distance [mm]", ylab="Stress [Pa]", type="l",ylim=c(-100,1000))#
+lines(pressure_reduced ~ Distance, theData, type="l",col="red")#
+all_data[[index_file]]=theData#
+cat(paste(index_file, " of ",dim(file_info)[1],sep=""))#
+cat("\n")#
+}
+library(textureAnalyzerGels)#
+library(gdata)#
+#rm(list=ls())#
+# Patrick: root_folder="C:\\Users\\burch\\Google Drive\\Amelie-Patrick-Thomas\\Volumina\\Mechanical Testing\\Materials\\CMC_concentration\\texture analyser\\2016_08_30"#
+root_folder = "/Users/thomasbraschler/Google Drive/Amelie-Patrick-Thomas/Volumina/Mechanical Testing/Materials/CMC_concentration/texture analyser/2016_08_30"#
+setwd(root_folder)#
+# Patrick: use#
+# file_info = read.xls("file listing.xlsx" ,perl="C:\\Perl64\\bin\\perl.exe")#
+file_info = read.xls("file listing.xlsx" )#
+load("blank.rda")#
+all_data=read_texture_analyzer_tab_list(file_info,root_folder,folder_column="Folder",file_column="File",chuck_diameter_column="diameter_mm",sd=0.05,boundary_extension_mm=0.2,lm_region_upper_mm=0.05)#
+index_file = 1#
+for(index_file in 1:(dim(file_info)[1]))#
+{#
+theFile = file_info[index_file,]#
+theData=all_data[[index_file]]#
+theData$pressure_reduced = theData$pressure - theBlank$pressure[match(paste(theData$Distance,theData$direction),paste(theBlank$Distance,theBlank$direction))]#
+theData$pressureSlope_reduced = theData$pressureSlope - theBlank$pressureSlope[match(paste(theData$Distance,theData$direction),paste(theBlank$Distance,theBlank$direction))]#
+theData$height = theFile$start_height_mm-theData$Distance#
+plot(theData$Distance, theData$pressure, xlab="Distance [mm]", ylab="Stress [Pa]", type="l",ylim=c(-100,1000))#
+lines(pressure_reduced ~ Distance, theData, type="l",col="red")#
+all_data[[index_file]]=theData#
+cat(paste(index_file, " of ",dim(file_info)[1],sep=""))#
+cat("\n")#
+}
+for(index_file in 1:(dim(file_info)[1]))#
+{#
+theFile = file_info[index_file,]#
+theData=all_data[[index_file]]#
+theData$pressure_reduced = theData$pressure - theBlank$pressure[match(paste(theData$Distance,theData$direction),paste(theBlank$Distance,theBlank$direction))]#
+theData$pressureSlope_reduced = theData$pressureSlope - theBlank$pressureSlope[match(paste(theData$Distance,theData$direction),paste(theBlank$Distance,theBlank$direction))]#
+theData$height = theFile$start_height_mm-theData$Distance#
+plot(theData$Distance, theData$pressure, xlab="Distance [mm]", ylab="Stress [Pa]", type="l",ylim=c(-100,1000))#
+lines(pressure_reduced ~ Distance, theData, type="l",col="red")#
+all_data[[index_file]]=theData#
+cat(paste(index_file, " of ",dim(file_info)[1],sep=""))#
+cat("\n")#
+}
+theBlank
+save(file="CMC_concentration_compression_data.rda",list=c("file_info","all_data","theBlank"))
+library(textureAnalyzerGels)#
+library(gdata)#
+library(xlsx)#
+rm(list=ls())#
+# Patrick: root_folder="C:\\Users\\burch\\Google Drive\\Amelie-Patrick-Thomas\\Volumina\\Mechanical Testing\\Materials\\CMC_concentration\\texture analyser\\2016_08_30"#
+root_folder = "/Users/thomasbraschler/Google Drive/Amelie-Patrick-Thomas/Volumina/Mechanical Testing/Materials/CMC_concentration/texture analyser/2016_08_30"#
+setwd(root_folder)#
+load("blank.rda")#
+load("CMC_concentration_compression_data.rda")#
+# Patrick: add back ,perl="C:\\Perl64\\bin\\perl.exe"#
+file_info = read.xls("file listing.xlsx" )#
+file_info = file_info[,apply(file_info,2,function(x){!all(is.na(x))})]#
+all_data = all_data[!file_info$Exclude_from_analysis]#
+file_info = file_info[!file_info$Exclude_from_analysis,]#
+wb <- createWorkbook()#
+theSheet<-createSheet(wb, sheetName="Extracted values from R")#
+headerRow<-createRow(theSheet, rowIndex=2)#
+theCells<-createCell(headerRow, colIndex=1:length(names(file_info)))#
+mapply(setCellValue, theCells, names(file_info))#
+firstRow<-createRow(theSheet, rowIndex=1)#
+theCells<-createCell(firstRow, colIndex=1)#
+mapply(setCellValue, theCells, "File listing variables")#
+index_file = 1#
+theData = all_data[[index_file]]#
+theFile = file_info[index_file,]#
+sample = foam_mechanical_analysis(theData,start_height=theFile$start_height_mm,approximate_gel_touch_point=theFile$approximate_gel_touch_point,stress_column="pressure",stress_slope_column="pressureSlope")#
+current_col_index=length(names(file_info))+1#
+theCells<-createCell(firstRow, colIndex=current_col_index)#
+mapply(setCellValue, theCells, "direction")#
+current_col_index = current_col_index + 1#
+column_index_data = current_col_index#
+for(theName in names(sample))#
+{#
+    theCells<-createCell(firstRow, colIndex=current_col_index)#
+    mapply(setCellValue, theCells, theName)#
+      theCells<-createCell(headerRow, colIndex=current_col_index:(dim(sample[[theName]])[2]-1+current_col_index))#
+      mapply(setCellValue, theCells, colnames(sample[[theName]]))#
+    current_col_index = current_col_index + dim(sample[[theName]])[2]#
+}#
+current_row_index = 1#
+for(index_file in 1:(dim(file_info)[1]))#
+{#
+theData = all_data[[index_file]]#
+theFile = file_info[index_file,]#
+current_row_index = current_row_index+2#
+theRowUpper<-createRow(theSheet, rowIndex=current_row_index)#
+theCells<-createCell(theRowUpper, colIndex=1:length(names(file_info)))#
+mapply(setCellValue, theCells, theFile)#
+theRowLower<-createRow(theSheet, rowIndex=current_row_index+1)#
+theCells<-createCell(theRowLower, colIndex=1:length(names(file_info)))#
+mapply(setCellValue, theCells, theFile)#
+analyzed_data = foam_mechanical_analysis(theData,start_height=theFile$start_height_mm,approximate_gel_touch_point=theFile$approximate_gel_touch_point,stress_column="pressure_reduced",stress_slope_column="pressureSlope_reduced")#
+datapoints=0#
+for(theName in names(analyzed_data))#
+{#
+    if(!is.null(dim(analyzed_data[[theName]])))#
+    {#
+        datapoints = datapoints+(dim(analyzed_data[[theName]])[1])*(dim(analyzed_data[[theName]])[2])#
+    } else {#
+        datapoints = datapoints+length(analyzed_data[[theName]])#
+    }#
+}#
+current_analyzed_data_frame = theFile#
+for(ind in 2:datapoints)#
+{#
+    current_analyzed_data_frame = rbind(current_analyzed_data_frame,theFile)#
+}#
+current_analyzed_data_frame$measurement = vector(mode="character",length=datapoints)#
+current_analyzed_data_frame$direction = vector(mode="character",length=datapoints)#
+current_analyzed_data_frame$point = vector(mode="character",length=datapoints)#
+current_analyzed_data_frame$value = vector(mode="numeric",length=datapoints)#
+current_row_analyzed_data = 1#
+for(theName in names(analyzed_data))#
+{#
+    to_put=analyzed_data[[theName]]#
+    if(!is.null(dim(to_put)))#
+    {#
+       for(theDirection in rownames(to_put))#
+       {#
+           for(thePlace in colnames(to_put))#
+           {#
+                current_analyzed_data_frame$measurement[current_row_analyzed_data]=theName#
+                current_analyzed_data_frame$direction[current_row_analyzed_data]=theDirection#
+                current_analyzed_data_frame$point[current_row_analyzed_data]=thePlace#
+                current_analyzed_data_frame$value[current_row_analyzed_data]=to_put[theDirection,thePlace]#
+                current_row_analyzed_data = current_row_analyzed_data+1#
+           }#
+       }#
+    } else {#
+        for(theDirection in names(to_put))#
+        {#
+        current_analyzed_data_frame$measurement[current_row_analyzed_data]=theName#
+        current_analyzed_data_frame$direction[current_row_analyzed_data]=theDirection#
+        current_analyzed_data_frame$point[current_row_analyzed_data]="overall"#
+        current_analyzed_data_frame$value[current_row_analyzed_data]=to_put[theDirection]#
+        current_row_analyzed_data = current_row_analyzed_data+1#
+        }#
+    }#
+}#
+if(index_file==1)#
+{#
+    all_analyzed_data = current_analyzed_data_frame#
+} else#
+{#
+    all_analyzed_data = rbind(all_analyzed_data,current_analyzed_data_frame)#
+}#
+theCells<-createCell(theRowUpper, colIndex=column_index_data-1)#
+mapply(setCellValue, theCells, rownames(analyzed_data[[1]])[1])#
+theCells<-createCell(theRowLower, colIndex=column_index_data-1)#
+mapply(setCellValue, theCells, rownames(analyzed_data[[1]])[2])#
+current_col_index=column_index_data#
+for(theName in names(analyzed_data))#
+{#
+    if(!is.null(dim(analyzed_data[[theName]])))#
+    {#
+        theCells<-createCell(theRowUpper, colIndex=current_col_index:(dim(analyzed_data[[theName]])[2]-1+current_col_index))#
+        mapply(setCellValue, theCells, analyzed_data[[theName]][1,])#
+        theCells<-createCell(theRowLower, colIndex=current_col_index:(dim(analyzed_data[[theName]])[2]-1+current_col_index))#
+        mapply(setCellValue, theCells, analyzed_data[[theName]][2,])#
+    } else#
+    {#
+        theCells<-createCell(theRowUpper, colIndex=current_col_index)#
+        mapply(setCellValue, theCells, analyzed_data[[theName]][1])#
+        theCells<-createCell(theRowLower, colIndex=current_col_index)#
+        mapply(setCellValue, theCells, analyzed_data[[theName]][2])#
+    }#
+    if(!is.null(dim(analyzed_data[[theName]])))#
+    {#
+        current_col_index = current_col_index + dim(analyzed_data[[theName]])[2]#
+    }    else#
+    {#
+        current_col_index = current_col_index + length(analyzed_data[[theName]])#
+    }#
+}#
+}#
+save(file="analysis_output_R_format.rda",all_analyzed_data)#
+saveWorkbook(wb, "analysis_output.xlsx")#
+aggregated = aggregate(value ~ measurement  + point+direction + CMC_conc,all_analyzed_data,FUN=mean)#
+aggregated_sd = aggregate(value ~ measurement  + point +direction+ CMC_conc,all_analyzed_data,FUN=sd)#
+plot_measurement<-function(aggregated,aggregated_sd,measurement,point)#
+{#
+    down = aggregated[aggregated$measurement==measurement & aggregated$point==point & aggregated$direction=="down",]#
+    down_sd = aggregated_sd[aggregated_sd$measurement==measurement & aggregated_sd$point==point & aggregated$direction=="down",]#
+    up = aggregated[aggregated$measurement==measurement & aggregated$point==point & aggregated$direction=="up",]#
+    up_sd = aggregated_sd[aggregated_sd$measurement==measurement & aggregated_sd$point==point & aggregated$direction=="up",]#
+    plot(value ~ CMC_conc, down ,type="b",log="xy",ylim=c(500,2.5e4), main="Plateau Young modulus \n Delta from touchpoint",ylab="Young modulus [Pa]",xlab="CMC [%]")#
+}#
+E_plateau_down = aggregated[aggregated$measurement=="E_from_touchpoint" & aggregated$point=="plateau" & aggregated$direction=="down",]#
+E_plateau_down_sd = aggregated_sd[aggregated_sd$measurement=="E_from_touchpoint" & aggregated_sd$point=="plateau" & aggregated_sd$direction=="down",]#
+E_plateau_up = aggregated[aggregated$measurement=="E_from_touchpoint" & aggregated$point=="plateau" & aggregated$direction=="up",]#
+E_plateau_up_sd = aggregated_sd[aggregated_sd$measurement=="E_from_touchpoint" & aggregated_sd$point=="plateau" & aggregated_sd$direction=="up",]#
+dev.new()#
+plot(value ~ CMC_conc, E_plateau_down ,type="b",log="xy",ylim=c(500,2.5e4), main="Plateau Young modulus \n Delta from touchpoint",ylab="Young modulus [Pa]",xlab="CMC [%]")#
+arrows(E_plateau_down$CMC_conc, E_plateau_down$value-E_plateau_down_sd$value,#
+    E_plateau_down$CMC_conc, E_plateau_down$value+E_plateau_down_sd$value, length=0.05, angle=90, code=3)#
+lines(value ~ CMC_conc, E_plateau_up ,type="b",col="red")#
+arrows(E_plateau_up$CMC_conc, E_plateau_up$value-E_plateau_up_sd$value,#
+E_plateau_up$CMC_conc, E_plateau_up$value+E_plateau_up_sd$value, length=0.05, angle=90, code=3,col="red")#
+legend("topleft",legend=c("Compression","Decompression"),pch=c(1,1),col=c("black","red"),lty=c(1,1))#
+dev.new()#
+E_elastic_down = aggregated[aggregated$measurement=="E" & aggregated$point=="elastic" & aggregated$direction=="down",]#
+E_elastic_down_sd = aggregated_sd[aggregated_sd$measurement=="E" & aggregated_sd$point=="elastic" & aggregated_sd$direction=="down",]#
+E_elastic_up = aggregated[aggregated$measurement=="E" & aggregated$point=="elastic" & aggregated$direction=="up",]#
+E_elastic_up_sd = aggregated_sd[aggregated_sd$measurement=="E" & aggregated_sd$point=="elastic" & aggregated_sd$direction=="up",]#
+plot(value ~ CMC_conc, E_elastic_down ,type="b",log="xy",ylim=c(500,2.5e4), main="Elastic Young modulus ",ylab="Young modulus [Pa]",xlab="CMC [%]")#
+arrows(E_elastic_down$CMC_conc, E_elastic_down$value-E_elastic_down_sd$value,#
+E_elastic_down$CMC_conc, E_elastic_down$value+E_elastic_down_sd$value, length=0.05, angle=90, code=3)#
+lines(value ~ CMC_conc, E_elastic_up ,type="b",col="red")#
+arrows(E_elastic_up$CMC_conc, E_elastic_up$value-E_elastic_up_sd$value,#
+E_elastic_up$CMC_conc, E_elastic_up$value+E_elastic_up_sd$value, length=0.05, angle=90, code=3,col="red")#
+legend("topleft",legend=c("Compression","Decompression"),pch=c(1,1),col=c("black","red"),lty=c(1,1))#
+dev.new()#
+for_E_ratio = all_analyzed_data[all_analyzed_data$measurement=="E" & all_analyzed_data$point=="plateau",]#
+for_E_ratio$measurement_2 = "E"#
+for_E_ratio$point_2 = "elastic"#
+for_E_ratio_2 = all_analyzed_data[all_analyzed_data$measurement=="E" & all_analyzed_data$point=="elastic",]#
+for_E_ratio$value_2 = for_E_ratio_2$value[match(paste(for_E_ratio$Folder,for_E_ratio$File,for_E_ratio$direction),paste(for_E_ratio_2$Folder,for_E_ratio_2$File,for_E_ratio_2$direction))]#
+for_E_ratio$E_plateau_to_E_elastic = for_E_ratio$value/for_E_ratio$value_2#
+E_ratio_agg=aggregate(E_plateau_to_E_elastic ~ CMC_conc + direction, for_E_ratio,FUN=mean)#
+plot(E_plateau_to_E_elastic ~ CMC_conc, E_ratio_agg[E_ratio_agg$direction=="down",] ,type="b",main="Young modulus ratio\n Plateau to Elastic",ylab="ratio",xlab="CMC [%]")#
+lines(E_plateau_to_E_elastic ~ CMC_conc, E_ratio_agg[E_ratio_agg$direction=="up",] ,type="b", col="red")#
+for_plateau_width = all_analyzed_data[all_analyzed_data$measurement=="strain" & all_analyzed_data$point=="transition_E_P",]#
+for_plateau_width$measurement_2 = "strain"#
+for_plateau_width$point_2 = "transition_P_D"#
+for_plateau_width_2 = all_analyzed_data[all_analyzed_data$measurement=="strain" & all_analyzed_data$point=="transition_P_D",]#
+for_plateau_width$value_2 = for_plateau_width_2$value[match(paste(for_plateau_width$Folder,for_plateau_width$File,for_plateau_width$direction),paste(for_plateau_width_2$Folder,for_plateau_width_2$File,for_plateau_width_2$direction))]#
+for_plateau_width$width=for_plateau_width$value_2-for_plateau_width$value#
+plateau_width_agg=aggregate(width ~ CMC_conc + direction, for_plateau_width,FUN=mean)#
+plateau_width_agg_sd=aggregate(width ~ CMC_conc + direction, for_plateau_width,FUN=sd)#
+plot(width ~ CMC_conc, plateau_width_agg[plateau_width_agg$direction=="down",] ,type="b", main="Plateau width (strain)",ylab="ratio",xlab="CMC [%]",ylim=c(0,0.6))#
+arrows(plateau_width_agg$CMC_conc[plateau_width_agg$direction=="down"], (plateau_width_agg$width-plateau_width_agg_sd$width)[plateau_width_agg$direction=="down"],#
+plateau_width_agg$CMC_conc[plateau_width_agg$direction=="down"], (plateau_width_agg$width+plateau_width_agg_sd$width)[plateau_width_agg$direction=="down"], length=0.05, angle=90, code=3,col="black")#
+lines(width ~ CMC_conc, plateau_width_agg[plateau_width_agg$direction=="up",] ,type="b", col="red")#
+arrows(plateau_width_agg$CMC_conc[plateau_width_agg$direction=="up"], (plateau_width_agg$width-plateau_width_agg_sd$width)[plateau_width_agg$direction=="up"],#
+plateau_width_agg$CMC_conc[plateau_width_agg$direction=="up"], (plateau_width_agg$width+plateau_width_agg_sd$width)[plateau_width_agg$direction=="up"], length=0.05, angle=90, code=3,col="red")
+data(sampleGel)
+colnames(sampleGel)
+rm(list=ls())
+data(sampleGel)
+ls()
+start_height_mm
+data(sampleGel)#
+plot(pressure ~ Distance, sampleGel)
+path = system.file('sampleData', package = 'textureAnalyzerGels');#
+sampleGel = read_texture_analyzer_tab(paste(path,"sampleGel.tab",sep="/"),chuck_diameter=4e-3)#
+start_height_mm=2.5#
+#
+# Loading of the data and elementary plotting#
+data(sampleGel)#
+plot(pressure ~ Distance, sampleGel,type="l",xlab="Distance [mm]",ylab="Pressure [Pa]")
+data(sampleGel)#
+plot(sampleGel$Distance, sampleGel$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]")
+rm(list=ls())
+data(sampleGelSmooth)
+ls()
+colnames(sampleGelSmooth)
+data(sampleGel)
+dim(sampleGel)
+dim(sampleGelSmooth)
+data(sampleGel)#
+data(sampleGelSmooth)#
+plot(sampleGel$Distance, sampleGel$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]")#
+plot.xy(xy.coords(sampleGelSmooth$Distance,sampleGelSmooth$pressure/1e3),type="l",col="red")
+data(sampleGel)#
+data(sampleGelSmooth)#
+plot(sampleGel$Distance, sampleGel$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",ylim=c(0,2))#
+plot.xy(xy.coords(sampleGelSmooth$Distance,sampleGelSmooth$pressure/1e3),type="l",col="red")
+3/(1+0.1+0.007+0.08)
+3/(1+0.1+0.007+0.008)
+3/(1+0.1+0.021+0.024)
+50/(1+0.1+0.021+0.024)
+2.15/(0.75+2.15+2.15)
+0.75/(0.75+2.15+2.15)
+0.75/(0.75+2.15+2.15)*3
+2/(2+0.8)
+2/(2+0.8)*3
+library(xlsx)
+path = system.file('sampleData/2016_08_30_Patrick_sample', package = 'textureAnalyzerGels');
+path
+file.path(path,"file listing.xlsx")
+rm(list=ls())
+path = system.file('sampleData/2016_08_30_Patrick_sample', package = 'textureAnalyzerGels');#
+file_info = read.xls(file.path(path,"file listing.xlsx") )
+file_info
+path = system.file('sampleData/2016_08_30_Patrick_sample', package = 'textureAnalyzerGels');#
+file_info = read.xls(file.path(path,"file listing.xlsx") )#
+all_data=read_texture_analyzer_tab_list(file_info=file_info,root_folder=path,sd=0.05,boundary_extension_mm=0.2,lm_region_upper_mm=0.05)
+CMC_concentration_file_info = read.xls(file.path(path,"file listing.xlsx") )
+CMC_concentration_data=read_texture_analyzer_tab_list(file_info=CMC_concentration_file_info,root_folder=path,sd=0.05,boundary_extension_mm=0.2,lm_region_upper_mm=0.05)
+CMC_concentration_data=all_data
+save(file="CMC_concentration_data.rda",list=c("CMC_concentration_data","CMC_concentration_file_info"))
+length(CMC_concentration_data)
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]")
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]")#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}
+names(CMC_concentration_file_info)
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]")#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+legend("topleft",legend=paste("c(CMC) = ",round(file_info$CMC_conc*10)/10, "%",sep=""),lty=rep(1,length(CMC_concentration_data)),col=palette()[1:length(CMC_concentration_data)])
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+legend("topleft",legend=paste("c(CMC) = ",round(file_info$CMC_conc*10)/10, "%",sep=""),lty=rep(1,length(CMC_concentration_data)),col=palette()[1:length(CMC_concentration_data)])
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3),ylim=c(0,10))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+legend("topleft",legend=paste("c(CMC) = ",round(file_info$CMC_conc*10)/10, "%",sep=""),lty=rep(1,length(CMC_concentration_data)),col=palette()[1:length(CMC_concentration_data)])
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3),ylim=c(0,10))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+legend("topleft",legend=paste("c(CMC) = ",round(file_info$CMC_conc*10)/10, "\%",sep=""),lty=rep(1,length(CMC_concentration_data)),col=palette()[1:length(CMC_concentration_data)])
+# Generation of the data#
+path = system.file('sampleData/2016_08_30_Patrick_sample', package = 'textureAnalyzerGels');#
+CMC_concentration_file_info = read.xls(file.path(path,"file listing.xlsx") )#
+CMC_concentration_data=read_texture_analyzer_tab_list(file_info=CMC_concentration_file_info,root_folder=path,sd=0.05,boundary_extension_mm=0.2,lm_region_upper_mm=0.05)#
+# Loading of the data and elementary plotting#
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3),ylim=c(0,10))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+legend("topleft",legend=paste("c(CMC) = ",round(file_info$CMC_conc*100)/10, " mg/mL",sep=""),lty=rep(1,length(CMC_concentration_data)),col=palette()[1:length(CMC_concentration_data)])
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3),ylim=c(0,10))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+legend("topleft",legend=paste("c(CMC) = ",round(file_info$CMC_conc*100)/10, " mg/mL",sep=""),lty=rep(1,length(CMC_concentration_data)),col=palette()[1:length(CMC_concentration_data)])
+blank=read_texture_analyzer_tab_list(file_info=CMC_concentration_file_info[1,],folder_column="control_folder",file_column="control_file",root_folder=path,sd=0.2,boundary_extension_mm=0.5,lm_region_upper_mm=0.1)
+rm(list=ls())
+path = system.file('sampleData/2016_08_30_Patrick_sample', package = 'textureAnalyzerGels');#
+CMC_concentration_file_info = read.xls(file.path(path,"file listing.xlsx") )#
+CMC_concentration_data=read_texture_analyzer_tab_list(file_info=CMC_concentration_file_info,root_folder=path,sd=0.05,boundary_extension_mm=0.2,lm_region_upper_mm=0.05)#
+#
+# The blank, for buyuoancy with gel, is common to all samples#
+CMC_concentration_blank=read_texture_analyzer_tab_list(file_info=CMC_concentration_file_info[1,],folder_column="control_folder",file_column="control_file",root_folder=path,sd=0.2,boundary_extension_mm=0.5,lm_region_upper_mm=0.1)[[1]]#
+for(ind in 1:length(CMC_concentration_data))#
+{#
+theFile = CMC_concentration_file_info[ind,]#
+theData=CMC_concentration_data[[ind]]#
+#
+CMC_concentration_data[[ind]]$pressure_reduced = theData$pressure - CMC_concentration_blank$pressure[match(paste(theData$Distance,theData$direction),paste(CMC_concentration_blank$Distance,CMC_concentration_blank$direction))]#
+CMC_concentration_data[[ind]]$pressureSlope_reduced = theData$pressureSlope - CMC_concentration_blank$pressureSlope[match(paste(theData$Distance,theData$direction),paste(CMC_concentration_blank$Distance,CMC_concentration_blank$direction))]#
+CMC_concentration_data[[ind]]$height = theFile$start_height_mm-theData$Distance#
+}
+save(file="CMC_concentration_data.rda",list=c("CMC_concentration_data","CMC_concentration_file_info", "CMC_concentration_blank"))
+rm(list=ls())
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3),ylim=c(0,10))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+lines(CMC_concentration_blank$Distance,CMC_concentration_blank$pressure,type="l",col=palette()[length(CMC_concentration_data)+1])
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3),ylim=c(0,10))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+lines(CMC_concentration_blank$Distance,CMC_concentration_blank$pressure/1e3,type="l",col=palette()[length(CMC_concentration_data)+1])#
+#
+legend("topleft",legend=paste("c(CMC) = ",round(file_info$CMC_conc*100)/10, " mg/mL",sep=""),lty=rep(1,length(CMC_concentration_data)),col=palette()[1:length(CMC_concentration_data)])
+# ===========================================================#
+# Loading of the data and elementary plotting#
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3),ylim=c(0,10))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+lines(CMC_concentration_blank$Distance,CMC_concentration_blank$pressure/1e3,type="l",col=palette()[length(CMC_concentration_data)+1])#
+#
+legend("topleft",legend=paste("c(CMC) = ",round(CMC_concentration_file_info$CMC_conc*100)/10, " mg/mL",sep=""),lty=rep(1,length(CMC_concentration_data)),col=palette()[1:length(CMC_concentration_data)])
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3),ylim=c(0,10))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+lines(CMC_concentration_blank$Distance,CMC_concentration_blank$pressure/1e3,type="l",col=palette()[length(CMC_concentration_data)+1])#
+#
+legend("topleft",legend=c(paste("c(CMC) = ",round(CMC_concentration_file_info$CMC_conc*100)/10, " mg/mL",sep=""),"blank (no gel)",lty=rep(1,length(CMC_concentration_data)+1),col=palette()[1:(length(CMC_concentration_data)+1)])
+data(CMC_concentration_data)#
+plot(CMC_concentration_data[[1]]$Distance, CMC_concentration_data[[1]]$pressure/1e3,type="l",xlab="Distance [mm]",ylab="Pressure [kPa]",xlim=c(0,3),ylim=c(0,10))#
+#
+for(ind in 2:length(CMC_concentration_data))#
+{#
+lines(CMC_concentration_data[[ind]]$Distance, CMC_concentration_data[[ind]]$pressure/1e3,type="l",col=palette()[ind])#
+}#
+#
+lines(CMC_concentration_blank$Distance,CMC_concentration_blank$pressure/1e3,type="l",col=palette()[length(CMC_concentration_data)+1])#
+#
+legend("topleft",legend=c(paste("c(CMC) = ",round(CMC_concentration_file_info$CMC_conc*100)/10, " mg/mL",sep=""),"blank (no gel)"),lty=rep(1,length(CMC_concentration_data)+1),col=palette()[1:(length(CMC_concentration_data)+1)])
