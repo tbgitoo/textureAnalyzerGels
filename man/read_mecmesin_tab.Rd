@@ -39,9 +39,14 @@ Thomas Braschler
 
 
 \examples{
+# This example is taken from https://doi.org/10.5281/zenodo.4441090 (Filippova et al. 2021), particularly Supplementary_Fig_S6.zip, sample2 for the traction test, copied here for the example
 path = system.file('sampleData/mecmesin/raw-TensileStrenght(peellike)(V1)-Modified Version-sample-2.txt', package = 'textureAnalyzerGels');
-sampleGel = read_mecmesin_tab(paste(path,"sampleGel.tab",sep="/"),chuck_diameter=4e-3)
-
+exampleTraction = read_mecmesin_tab(path,sample_diameter=4.76e-3,downup=FALSE)
+plot(pressure ~ Distance, exampleTraction,type="b",xlab="Distance [mm]", ylab="Stress [Pa]")
 }
 \keyword{ misc }
+
+\references{
+ Filippova A, Bonini F, Efremov L, Locatelli M, Preynat-Seauve O, Beduer A, Krause KH, Braschler T, 2021: Neurothreads: development of supportive carriers for mature dopaminergic neuron differentiation and implantation, Raw data set: https://doi.org/10.5281/zenodo.4441090 accompanying the corresponding scientific publication at Biomaterials (https://doi.org/10.1016/j.biomaterials.2021)
+}
 
