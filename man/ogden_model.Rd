@@ -55,5 +55,5 @@ plot(E ~ stretch)
 
 \keyword{ misc }
 
-\references{Ogden, R. W. (1972), ?Large Deformation Isotropic Elasticity - On the Correlationof Theory and Experiment for Incompressible Rubberlike Solids?,Proceedings of theRoyal Society A: Mathematical, Physical and Engineering Sciences326(1567), 565?584.}
+\references{Ogden, R. W. (1972), Large Deformation Isotropic Elasticity - On the Correlationof Theory and Experiment for Incompressible Rubberlike Solids,Proceedings of theRoyal Society A: Mathematical, Physical and Engineering Sciences326(1567), 565?584.}
 
