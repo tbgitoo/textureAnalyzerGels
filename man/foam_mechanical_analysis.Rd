@@ -5,7 +5,7 @@
 foam_mechanical_analysis
 }
 \description{
- Analysis of foam compression curves. This function separates the foam compression curve into different zones by indicating the transition points: [free zone (no contact between chuck and foam)] - touchpoint - elastic compression region - transition_E_P -  plateau region - transition_P_D - [densification region]. Localization and mechanical properties are analyzed at the points from touchpoint to transition_P_D.
+ Analysis of foam compression curves. This function assumes a classical foam compression behaviour, with a steeper elastic, a flatter plateau and then again a steep densification region in stress-strain (or equivalently, force-distance) diagrams (Gibson&Ashby, 1997). This function separates the prototypical foam compression curve into different zones by indicating the transition points: [free zone (no contact between chuck and foam)] - touchpoint - elastic compression region - transition to plateau -  plateau region - transition to densification- densification. Localization and mechanical properties are analyzed at the points from touchpoint to the transition to densification.
 }
 \usage{
 foam_mechanical_analysis(theData,start_height,approximate_gel_touch_point=NULL,landmarks=NULL,gel_thickness=NULL,stress_column="pressure",stress_slope_column="pressureSlope")
@@ -38,7 +38,7 @@ A list with different geometric and mechanical measures: \cr\cr
 \item{strain}{Relative compression. This is distance relative to the touchpoint, divided by gel height. This variable has the same structure as the Distance element described above.}
 \item{strain}{Relative compression. This is distance relative to the touchpoint, divided by gel height. This variable has the same structure as the Distance element described above.}
 \item{stress}{Mechanical stress (force per area) at the different points. Again same matrix layout.}
-\item{E}{Local Young moduli. The local Young moduli are the local slopes (derivative) in strain-stress diagrams. Same structure.}
+\item{E}{Local Young moduli. The local Young moduli are the local slopes (derivative) in strain-stress diagrams. Same structure. The Young modulus on the elastic segment ("elastic") in the compression direction ("down" if using compression and relaxation) can be used to define the Young modulus as it corresponds to the zone of linear elasticity (Gibson&Ashby 1997).	}
 \item{E_from_touchpoint}{Young moduli as measured from the touchpoint.The slope is taken from the straight line connecting the touchpoint to the desired second point on the curve in the strain-stress diagram. Same matrix structure as the variables before.}
 \item{plateau_detected}{Whether or not the was a plateau detected. A plateau is detected if the smoothened slope has a minimum beyond the elastic compression, otherwise no plateau is detected. Logical vector of two elements, for the down and up part of the compression cycle. }
 \item{plateau_width}{In terms of strain, the width of the plateau. Numerical vector of two values, for the up and down part of the compression cycle.}
@@ -86,4 +86,6 @@ legend("topleft",pch=c(1,1),col=c("red","green"),legend=c("Compression","Relaxat
 }
 
 \keyword{ misc }
+
+\references{Gibson, L. J. & Ashby, M. F. Cellular Solids: Structure and properties. (Cambridge University Press, 1997).}
 
