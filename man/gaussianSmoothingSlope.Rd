@@ -2,7 +2,7 @@
 \alias{gaussianSmoothingSlope}
 \title{gaussianSmoothingSlope
 }
-\description{Slope of a curve smoothed by a gaussian filter
+\description{Slope of a curve smoothed by a gaussian filter; this is a classical difference of gaussian filter (Gonzalez and Woods 2008) with the possibility to indicate specific output points.
 }
 \usage{
 gaussianSmoothingSlope(x,y,sd=1,xout=x,...)
@@ -56,6 +56,10 @@ plot.xy(xy.coords(x=xout,y=slope*1000),type="l",col="green")
 
 }
 \keyword{ misc }
+
+\references{
+Digital Image Processing, 3rd edition, Gonzalez R.C. and Woods R.E., Pearson, 2008, ISBN 9780133002324
+}
 
 
 
