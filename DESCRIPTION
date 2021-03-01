@@ -1,0 +1,11 @@
+Package: textureAnalyzerGels
+Type: Package
+Title: Reading and analyzing texture analyzer data
+Version: 1.0
+Date: 2013-10-18
+Author: Patrick Burch, Marina Braschler, Thomas Braschler
+Depends: gsl, gdata, xlsx
+Maintainer: Thomas Braschler <thomas.braschler@gmail.com>
+Description: Reads tabulated force-distance files made by the Exponent Software for the Texture Analyzer machines.
+License: GPL
+LazyLoad: yes
