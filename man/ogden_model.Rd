@@ -30,7 +30,7 @@ Young modulus at the given stretch values
 }
 
 \details{
-The Ogden model is a polynomial model for fitting Young moduli as a function of the material stretch (stretch = delta(L) / L = 1+strain). The formula can be expressed variously, for uniaxial compression it is essentially a polynomial. The formula used here is :\cr\cr
+The Ogden model (Ogden 1972) is a power model for fitting Young moduli as a function of the material stretch (stretch = delta(L) / L = 1+strain). The formula can be expressed variously, we use here :\cr\cr
 \code{Stress=SUM mu*((stretch^alpha)-1)/alpha}\cr\cr
 The reason for this particular choice is that this causes the contribution of the different powers (\code{alpha}) to the Young modulus (d(stress)/d(strain)) for the undeformed material (\code{stretch=1}) to depend solely on the \code{mu} but not \code{alpha} values :\cr
 \code{lim(E,stretch=1)=SUM mu} \cr
@@ -54,4 +54,6 @@ plot(E ~ stretch)
 }
 
 \keyword{ misc }
+
+\references{Ogden, R. W. (1972), ?Large Deformation Isotropic Elasticity - On the Correlationof Theory and Experiment for Incompressible Rubberlike Solids?,Proceedings of theRoyal Society A: Mathematical, Physical and Engineering Sciences326(1567), 565?584.}
 
