@@ -20,13 +20,13 @@ Vector of coefficients
 }
 
 \item{stretch}{
-Stretch at which the Young modulus should be evaluated
+Stretch at which the stress values should be evaluated
 }
 
 }
 
 \value{
-Young modulus at the given stretch values, obtained by calling \link{ogden_model} via:\cr\cr
+Stress at the given stretch values, obtained by calling \link{ogden_model} via:\cr\cr
 \code{ogden_model(c(mu,mu),c(alpha,-alpha),stretch)}
 }
 
@@ -40,7 +40,7 @@ Thomas Braschler
 
 stretch=seq(from=0.5,to=2,by=0.01)
 stress=ogden_model_symmetric(mu=c(1e3),alpha=c(3),stretch=stretch)
-
+# Sekant Young model
 E=stress/(stretch-1)
 
 plot(E ~ stretch)

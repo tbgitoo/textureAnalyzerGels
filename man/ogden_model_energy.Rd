@@ -20,13 +20,13 @@ Vector of coefficients
 }
 
 \item{stretch}{
-Stretch at which the Young modulus should be evaluated
+Stretch at which the stress energy should be evaluated
 }
 
 }
 
 \value{
-Young modulus at the given stretch values
+Stress energy at the given stretch values
 }
 
 \details{
@@ -41,15 +41,14 @@ Thomas Braschler
 \examples{
 
 stretch=seq(from=1,to=2,by=0.01)
-stress=ogden_model_energy(mu=c(1e3,1e3),alpha=c(6,-3),stretch=stretch)
+stress_energy=ogden_model_energy(mu=c(1e3,1e3),alpha=c(6,-3),stretch=stretch)
 
-E=stress/(stretch-1)
 
-plot(E ~ stretch)
+plot(stress_energy ~ stretch)
 
 }
 
 \keyword{ misc }
 
-\references{Ogden, R. W. (1972), Large Deformation Isotropic Elasticity - On the Correlationof Theory and Experiment for Incompressible Rubberlike Solids,Proceedings of theRoyal Society A: Mathematical, Physical and Engineering Sciences326(1567), 565?584.}
+\references{Ogden, R. W. (1972), Large Deformation Isotropic Elasticity - On the Correlation of Theory and Experiment for Incompressible Rubberlike Solids,Proceedings of theRoyal Society A: Mathematical, Physical and Engineering Sciences,326(1567), 565-584.}
 
