@@ -2,7 +2,7 @@
 \alias{gaussianSmoothing}
 \title{gaussianSmoothing
 }
-\description{Smoothes a curve using a gaussian filter
+\description{Smoothes a curve using a gaussian filter. Using default values, produces classical gaussian smoothing (Blinchikoff and Zverev 1976), but permits additional flexibility to specify the desired output points and specficic handling of the edges to reduce edge artefacts.
 }
 \usage{
 gaussianSmoothing(x,y,sd=1,xout=NULL,boundary_extension=0,lm_region_lower=boundary_extension,lm_region_upper=boundary_extension)
@@ -34,6 +34,8 @@ plot(x=x,y=y,type="p")
 plot.xy(xy.coords(x=xout,y=smoothed),type="l",col="red")
 }
 \keyword{ misc }
+
+\references{Filtering in the Time and Frequency Domains, Herman J. Blinchikoff, Anatol I. Zverev, Wiley, 1976}
 
 
 
