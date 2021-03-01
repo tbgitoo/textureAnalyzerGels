@@ -5,7 +5,8 @@
 force_Hertz_AFM_indentation
 }
 \description{
-Calculation of the force necessary to indent an AFM tip of radius \code{R_tip} into a flat substrate to a depth of \code{h_indentation} \cr 
+Calculation of the force necessary to indent an AFM tip of radius \code{R_tip} into a flat substrate to a depth of \code{h_indentation}. \cr
+This is the classical Hertzian sphere indentation model (Popov 2017). 
 }
 \usage{
 force_Hertz_AFM_indentation(E_substrate=1e8,nu_substrate=0.5,h_indentation=20e-9,R_tip=8e-9)
@@ -33,7 +34,7 @@ Force necessary to produce the desired indentation.
 
 \details{
 
-The formula used here applies to an indentation by a spherical indentor into a substrate of isotropic, homogeneous composition occupying the lower half-plane.
+The formula used here applies to an indentation by a spherical indentor into a substrate of isotropic, homogeneous composition occupying the lower half-plane (Popov 2017).
 
 }
 
@@ -46,6 +47,10 @@ Thomas Braschler
 
 force_Hertz_AFM_indentation()
 
+}
+
+\references{
+Popov, L. V. Contact Mechanics and Friction, Springer, Berlin-Heidelberg, 2017
 }
 
 \keyword{ misc }
