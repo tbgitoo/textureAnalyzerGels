@@ -59,4 +59,9 @@ lines(CMC_concentration_blank$Distance,CMC_concentration_blank$pressure/1e3,type
 legend("topleft",legend=c(paste("c(CMC) = ",round(CMC_concentration_file_info$CMC_conc*100)/10, " mg/mL",sep=""),"blank (no gel)"),lty=rep(1,length(CMC_concentration_data)+1),col=palette()[1:(length(CMC_concentration_data)+1)])
 
 }
+
+\author{
+Patrick Burch, Thomas Braschler
+}
+
 \keyword{datasets}
