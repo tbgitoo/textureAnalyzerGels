@@ -37,7 +37,7 @@ Dataframe with the following columns:
 \item{Force }{Force as measured by the Texture Analyzer, in grams}
 \item{direction}{Interpretation in terms of downward and upward movement, possible values are "down" and "up"}
 \item{Time}{Time of acquisition, as given by the Texture Analyzer}
-\item{pressure}{Calculated pressure (strain) exercised by the chuck; since pressure is given by force / area, the area is estimated from the \code{chuck_diameter} argument}
+\item{pressure}{Calculated pressure (stress) exercised by the chuck; since pressure is given by force / area, the area is estimated from the \code{chuck_diameter} argument}
 }
 
 \author{
@@ -49,7 +49,6 @@ Thomas Braschler
 \examples{
 path = system.file('sampleData', package = 'textureAnalyzerGels');
 sampleGel = read_texture_analyzer_tab(paste(path,"sampleGel.tab",sep="/"),chuck_diameter=4e-3)
-
 }
 \keyword{ misc }
 

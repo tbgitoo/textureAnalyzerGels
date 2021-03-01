@@ -25,11 +25,11 @@ Calls \link{read_texture_analyzer_tab} with specific parameters internally.
 }
 \value{
 Dataframe with the following columns:
-\item{Distance }{Distance of downward movement of the chuck, as given by the texture analyzer; the units are expected to be in mm}
+\item{Distance }{Distance of movement of the chuck, as provided by the Mecmesin apparatus; the units are expected to be in mm}
 \item{Force }{Force as measured by the Texture Analyzer, in grams}
-\item{direction}{Interpretation in terms of downward and upward movement, possible values are "down" and "up"}
-\item{Time}{Time of acquisition, as given by the Texture Analyzer}
-\item{pressure}{Calculated pressure (strain) exercised by the chuck; since pressure is given by force / area, the area is estimated from the \code{chuck_diameter} argument}
+\item{direction}{Interpretation in terms of downward and upward movement, possible values are "down" and "up". This is with respect to the phases of the program (assumed down first), not necessarily physical orientation. }
+\item{Time (s)}{Time of acquisition, as given by the Mecmesin apparatus}
+\item{pressure}{Calculated pressure (stress) exercised by the chuck; since pressure is given by force / area, the area is estimated from the \code{sample_diameter} argument}
 }
 
 \author{
@@ -39,8 +39,8 @@ Thomas Braschler
 
 
 \examples{
-# This example is taken from https://doi.org/10.5281/zenodo.4441090 (Filippova et al. 2021), particularly Supplementary_Fig_S6.zip, sample2 for the traction test, copied here for the example
-path = system.file('sampleData/mecmesin/raw-TensileStrenght(peellike)(V1)-Modified Version-sample-2.txt', package = 'textureAnalyzerGels');
+# This example is taken from https://doi.org/10.5281/zenodo.4441090 (Filippova et al. 2021), Supplementary_Fig_S6.zip, sample2 for the traction test. From there, we copied the file "raw-TensileStrenght(peellike)(V1)-Modified Version-sample-2.txt" here to serve as an example.
+path = system.file('sampleData/mecmesin/data/raw-TensileStrenght(peellike)(V1)-Modified Version-sample-2.txt', package = 'textureAnalyzerGels');
 exampleTraction = read_mecmesin_tab(path,sample_diameter=4.76e-3,downup=FALSE)
 plot(pressure ~ Distance, exampleTraction,type="b",xlab="Distance [mm]", ylab="Stress [Pa]")
 }
