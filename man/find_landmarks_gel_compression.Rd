@@ -4,7 +4,7 @@
 find_landmarks_gel_compression
 }
 \description{
-Finds landmark points in the gel compression curve (Force - Distance curve). Currently, detection of the gel touch point in both the "down" and "up" cycle of the chuck is implemented
+Finds landmark points in as porous gel compression curve (Force - Distance curve). Currently, detection of the gel touch point in both the "down" and "up" cycle of the chuck is implemented. The analysis is based on the general curve for foams, comprising an initial steep elastic segment, followed by a plateau and then a densification region (Gibson &Ashby, 1997).
 }
 \usage{
 find_landmarks_gel_compression(theData, approximate_gel_touch_point = NULL)
@@ -42,4 +42,5 @@ data(sampleGelSmooth)
 find_landmarks_gel_compression(sampleGelSmooth)
 }
 \keyword{ misc }
+\references{Gibson, L. J. & Ashby, M. F. Cellular Solids: Structure and properties. (Cambridge University Press, 1997).}
 

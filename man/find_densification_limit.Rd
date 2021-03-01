@@ -5,7 +5,7 @@
 find_densification_limit
 }
 \description{
-Estimates the end of the plateau segment where the compression force starts to raise dramatically. In foams, this marks the end of pore space compression in favour of increasing wall material loading (Gibson&Ashby, 1997).
+For porous (foam-like) materials, estimates the end of the plateau segment where the compression force starts to raise dramatically. In foams, this marks the end of pore space compression in favour of increasing wall material loading (Gibson&Ashby, 1997).
 }
 \usage{
 find_densification_limit(theData,touch_point,elastic_limit,gel_thickness=NULL)
