@@ -31,8 +31,11 @@ Thomas Braschler
 
 
 \seealso{
-\code{\link{smooth_texture_analyzer_data}} \cr
-\code{\link{find_initial_touch_point}}
+\code{\link{smooth_texture_analyzer_data}} \cr\cr
+And the functions used internally:
+\code{\link{find_initial_touch_point}} \cr
+\code{\link{find_elastic_limit}} \cr
+\code{\link{find_densification_limit}}
 }
 \examples{
 data(sampleGelSmooth)

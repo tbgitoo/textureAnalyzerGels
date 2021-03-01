@@ -5,7 +5,7 @@
 find_densification_limit
 }
 \description{
-Estimates the end of the plateau segment where the compression force starts to raise dramatically
+Estimates the end of the plateau segment where the compression force starts to raise dramatically. In foams, this marks the end of pore space compression in favour of increasing wall material loading (Gibson&Ashby, 1997).
 }
 \usage{
 find_densification_limit(theData,touch_point,elastic_limit,gel_thickness=NULL)
@@ -42,4 +42,6 @@ find_densification_limit(sampleGelSmooth[sampleGelSmooth$direction=="down",])
 }
 
 \keyword{ misc }
+
+\references{Gibson, L. J. & Ashby, M. F. Cellular Solids: Structure and properties. (Cambridge University Press, 1997).}
 
