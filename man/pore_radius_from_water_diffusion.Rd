@@ -20,7 +20,7 @@ Young modulus after stress relaxation (typically, half of the Young modulus befo
 }
 }
 \details{
-This function is based on a direct comparison of water diffusion under compression in a hydrogel and Poiseuille's law to obtain an order-of magnitude estimate for pore sizes in highly porous media.\cr\cr
+This function is based on a direct comparison of water diffusion under compression in a hydrogel and Poiseuille's law to obtain an order-of magnitude estimate for pore sizes in highly porous media. See also Braschler et al. 2015.\cr\cr
 Covalently crosslinked hydrogel present viscoelastic behaviour which is almost exclusively due to water displacement in the pores. Indeed, under reasonable deformation, one does not expect plastic deformation of the covalently crosslinked gel skeleton itself, only displacement of water pore volume and local stretching or folding of the polymer chains. This gives rise to a characteristic stress relaxation behavior, where the gel is incompressible on short time scales, but compressible by loss of pore water at long time scales. On a fundamental level, the pore pressure is due to volume load with pore medium  :\cr\cr
 \code{P_pore = E*phi} \cr\cr
 where \code{E} is the bulk elastic modulus (technically, given as the drained bulk modulus by \code{E/3/(1-2*poisson_ratio)}, but which is about the same as the Young modulus \code{E} for typical materials with a Poisson ratio of about 0.3) , whereas \code{phi=delta(V)/V} is the relative volume load with pore medium. In a relaxation experiment, \code{phi} is initially given by the rapid compression, but then drops to \code{phi=0} as the gel equilibrates by expulsion of pore solution. Darcy's law gives the flow velocity \code{v} due to the ensuing pressure gradient:\cr\cr
@@ -55,4 +55,10 @@ Thomas Braschler
 pore_radius_from_water_diffusion(D=1e-9,nu=1e-3,E=1e4)
 }
 \keyword{ misc }
+
+\references{
+Braschler T, Songmei W, Wildhaber F, Bencherif SA, Mooney DJ, "Soft nanofluidics governing minority ion exclusion in charged hydrogels", Soft Matter, Issue 20, 2015, specific details in Supplementary 2.}
+
+
+
 

@@ -32,7 +32,7 @@ Force necessary to produce the desired indentation.
 
 \details{
 
-The formula used here applies to an indentation by a conical indentor into a substrate of isotropic, homogeneous composition occupying the lower half-plane (Sneddon 1965).
+The formula used here applies to an indentation by a conical indentor into a substrate of isotropic, homogeneous composition occupying the lower half-plane (Sneddon 1965w).
 
 }
 
