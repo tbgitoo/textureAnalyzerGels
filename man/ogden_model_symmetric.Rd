@@ -5,7 +5,7 @@
 ogden_model_symmetric
 }
 \description{
-Convenience function, giving the alastic stress as a function of the material stretch, according to the Ogden model, by using symmetric pairs of \code{mu} and \code{alpha}. Uses \link{ogden_model}
+Convenience function, giving the elastic stress as a function of the material stretch, according to the Ogden model (Ogden 1972), by using symmetric pairs of \code{mu} and \code{alpha}. Uses \link{ogden_model}
 }
 \usage{
 ogden_model_symmetric(mu,alpha,stretch)
@@ -48,4 +48,7 @@ plot(E ~ stretch)
 }
 
 \keyword{ misc }
+
+\references{Ogden, R. W. (1972), ?Large Deformation Isotropic Elasticity - On the Correlationof Theory and Experiment for Incompressible Rubberlike Solids?,Proceedings of theRoyal Society A: Mathematical, Physical and Engineering Sciences326(1567), 565?584.}
+
 
