@@ -8,14 +8,14 @@ read_mecmesin_tab_list
 Reads a series of texture analyzer tab files
 }
 \usage{
-read_mecmesin_tab_list(file_info,root_folder,folder_column="Folder",file_column="File",sample_diameter_column="diameter_mm",do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,downup=TRUE,...)
+read_mecmesin_tab_lis(file_info,root_folder=getwd(),folder_column="Folder",file_column="File",sample_diameter_column="diameter_mm",do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,downup=TRUE,...)
 }
 
 \arguments{
   \item{file_info}{
 Dataframe describing the files to be read. Needs to contain at least the following columns: 1. A folder column, describing the sub-folder where the individual files are located. The name of this column is given by the argument \code{folder_column}. 2. A file column indicating the filename of the file to be read. The name of this column is given by \code{file_column}. 3. A sample or gel diameter column, where the diameter of the sample or gel is indicated (whichever is smaller, basically). The name of this column is given by the \code{sample_diameter_column} argument.
 }
-\item{root_folder}{Common root folder where all the tab-files to be read are located.}
+\item{root_folder}{Common root folder where all the tab-files to be read are located, defaults to the current working directory as given by \link{getwd}.}
   \item{folder_column}{
 Name of the column in \code{file_info} that contains the folder location.
 }
@@ -41,11 +41,16 @@ Thomas Braschler, Patrick Burch
 
 
 \examples{
-path = system.file('sampleData/2016_08_30_Patrick_sample', package = 'textureAnalyzerGels');
-CMC_concentration_file_info = read.xls(file.path(path,"file_listing.xlsx") )
-CMC_concentration_data=read_mecmesin_tab_list(file_info=CMC_concentration_file_info,root_folder=path,sd=0.05,boundary_extension_mm=0.2,lm_region_upper_mm=0.05)
+# This example is taken from https://doi.org/10.5281/zenodo.4441090 (Filippova et al. 2021), Supplementary_Fig_S6.zip, sample2 and sample3 for the traction test. From there, we copied the file "raw-TensileStrenght(peellike)(V1)-Modified Version-sample-2.txt" and "raw-TensileStrenght(peellike)(V1)-Modified Version-sample-3.txt" data files, as well as the file listing "files_stretch.xlsx" for these two data files here to serve as an example.
+path = system.file('sampleData/mecmesin', package = 'textureAnalyzerGels');
+tensile_test_file_info = read.xls(file.path(path,"files_stretch.xlsx") )
+tensile_test_data=read_mecmesin_tab_list(tensile_test_file_info,root_folder=path,do_smoothing=TRUE,do_plot=TRUE,downup=FALSE,sd=0.1)
 
 
 }
 \keyword{ misc }
+
+\references{
+ Filippova A, Bonini F, Efremov L, Locatelli M, Preynat-Seauve O, Beduer A, Krause KH, Braschler T, 2021: Neurothreads: development of supportive carriers for mature dopaminergic neuron differentiation and implantation, Raw data set: https://doi.org/10.5281/zenodo.4441090 accompanying the corresponding scientific publication at Biomaterials (https://doi.org/10.1016/j.biomaterials.2021)
+}
 
