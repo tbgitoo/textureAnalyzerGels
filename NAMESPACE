@@ -6,8 +6,10 @@ exportPattern(".")
 
 # Import all packages listed as Imports or Depends
 import(
-  probabilityUtils,
   gsl,
   gdata,
   xlsx
 )
+
+importFrom("stats","aggregate","lm","coefficients","predict")
+
