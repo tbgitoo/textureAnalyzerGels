@@ -11,5 +11,8 @@ import(
   xlsx
 )
 
-importFrom("stats","aggregate","lm","coefficients","predict")
+importFrom("stats","aggregate","lm","coefficients","predict","approxfun", "dnorm", "nls")
+importFrom("grDevices", "dev.new", "xy.coords")
+importFrom("graphics", "legend", "lines", "plot.xy")
+importFrom("utils", "read.table")
 

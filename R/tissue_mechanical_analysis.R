@@ -68,11 +68,11 @@ function(theData,start_height,approximate_touch_point=NULL,stress_column="pressu
     
    
         
-        pressureDown <<- theData[theData$direction=="down" & theData$strain>0, stress_column ]
-        strainDown <<- theData[theData$direction=="down" & theData$strain>0, "strain" ]
+        pressureDown <- theData[theData$direction=="down" & theData$strain>0, stress_column ]
+        strainDown <- theData[theData$direction=="down" & theData$strain>0, "strain" ]
         
-        pressureUp <<-theData[theData$direction=="up" & theData$strain>0, stress_column ]
-        strainUp <<- theData[theData$direction=="up" & theData$strain>0, "strain" ]
+        pressureUp <-theData[theData$direction=="up" & theData$strain>0, stress_column ]
+        strainUp <- theData[theData$direction=="up" & theData$strain>0, "strain" ]
         
         pressureUpmatched <<- pressureUp[match(strainDown,strainUp)]
         
