@@ -29,19 +29,20 @@ Thomas Braschler
 
 
 \examples{
+# This is destructive testing on a classical (nanoporous) CMC gel, for illustration of the multi-cycle analysis
 path = system.file('sampleData', package = 'textureAnalyzerGels');
 sampleGel=detect_compression_cycles(read_texture_analyzer_tab(paste(path,"sampleDataMultipleCycles.tab",sep="/"),chuck_diameter=4e-3,aggregate_by=FALSE))
 
-sampleGelSmooth = smooth_texture_analyzer_data(sampleGel,boundary_extension=200,sd=0.0025)
+sampleGelSmooth = smooth_texture_analyzer_data(sampleGel,boundary_extension_mm=0.2,sd=0.0025)
 
 cycle = 1
 
 col=palette()[cycle]
 
-plot(pressure ~ Distance, sampleGelSmooth[sampleGelSmooth$cycle==cycle ,],type="l",col=col,ylim=c(-750,1250),xlim=c(0,4),ylab="Strain [Pa]",xlab="Compression [mm[")
+plot(pressure ~ Distance, sampleGelSmooth[sampleGelSmooth$cycle==cycle ,],type="l",col=col,ylim=c(-750,1250),xlim=c(0,8),ylab="Stress [Pa]",xlab="Compression [mm]")
 
 
-for(cycle in 2)
+for(cycle in 2:max(sampleGelSmooth$cycle))
 {
 col=palette()[cycle]
 

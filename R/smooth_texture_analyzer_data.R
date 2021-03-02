@@ -15,6 +15,7 @@ function(theData,sd=0.04,cycle_col="cycle",boundary_extension_mm=0.2,lm_region_l
         boundary_extension = min(which(abs(theData$Distance-theData$Distance[1])>boundary_extension_mm))
         lm_region_lower = lm_region_lower_mm*boundary_extension/boundary_extension_mm
         lm_region_upper = lm_region_upper_mm*boundary_extension/boundary_extension_mm
+       
     }
     theData$ForceSlope = NA
     theData$pressureSlope = NA
@@ -42,6 +43,8 @@ function(theData,sd=0.04,cycle_col="cycle",boundary_extension_mm=0.2,lm_region_l
             gaussianSmoothingBlock(dataToSmooth$Distance[selector],
                 dataToSmooth$Force[selector],sd=sd,boundary_extension=boundary_extension,
                 lm_region_upper=lmr_upper,lm_region_lower=lmr_lower,block_size=block_size)
+        
+        
         dataToSmooth$ForceSlope[selector] =
             gaussianSmoothingSlopeBlock(dataToSmooth$Distance[selector],
                 dataToSmooth$Force[selector],sd=sd,boundary_extension=boundary_extension,
@@ -61,6 +64,9 @@ function(theData,sd=0.04,cycle_col="cycle",boundary_extension_mm=0.2,lm_region_l
     }
     
     
+    
+    
+    
     for(theDirection in unique(theData$direction))
     {
         if(!(cycle_col %in% colnames(theData)))
@@ -72,9 +78,11 @@ function(theData,sd=0.04,cycle_col="cycle",boundary_extension_mm=0.2,lm_region_l
             
         } else
         {
+          
             
             for(theCycle in unique(theData[,cycle_col]))
             {
+                
                 selector = (theData$direction==theDirection) & (theData[,cycle_col]==theCycle)
                 
                 theData=do_smoothing(theData,selector)

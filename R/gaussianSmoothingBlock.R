@@ -1,12 +1,15 @@
 gaussianSmoothingBlock<-function(x,y,sd=1,xout=NULL, boundary_extension=0,lm_region_lower=boundary_extension,lm_region_upper=boundary_extension,block_size=3)
 {
+  
+  
 	
     # First of all, if no block size is provided, call the underlying gaussianSmoothin function directly
 
 if(block_size==0 | is.null(block_size)) {
     return (gaussianSmoothing(x=x,y=y,sd=sd,xout=xout, boundary_extension=boundary_extension,lm_region_lower=lm_region_lower,lm_region_upper=lm_region_upper))
 }
-
+  
+ 
 # OK, so a block size is defined
 
 # First of all, remove NA =====================
@@ -28,10 +31,13 @@ if(block_size==0 | is.null(block_size)) {
         
         extend_z<-function(z,boundary_extension)
         {
+          
             n<-length(z)
             b_index_lower<- 1:lm_region_lower
+            
             b_index_extension_lower <- (-(1:boundary_extension)+1)[boundary_extension:1]
             zlm_lower<-z[b_index_lower]
+            
             
             
             b_index_upper <- (n-lm_region_upper+1):n
