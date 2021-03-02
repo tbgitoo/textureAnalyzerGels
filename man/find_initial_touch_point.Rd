@@ -38,7 +38,11 @@ Thomas Braschler
 }
 \examples{
 data(sampleGelSmooth)
-find_initial_touch_point(sampleGelSmooth[sampleGelSmooth$direction=="down",])
+touch_point=find_initial_touch_point(sampleGelSmooth[sampleGelSmooth$direction=="down",])
+plot(Force ~ Distance, sampleGelSmooth[sampleGelSmooth$direction=="down",]) 
+lines(rep(touch_point,2),c(0,11),col="red")
+text(touch_point,11.5,labels="Touch point",adj=0.5,col="red")
+
 }
 
 \keyword{ misc }
