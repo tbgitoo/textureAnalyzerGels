@@ -22,7 +22,7 @@ Name of the column in \code{file_info} that contains the folder location.
 \item{file_column}{Name of the column in \code{file_info} that contains the filename.}
 \item{sample_diameter_column}{Name of the column in \code{file_info} that contains the relevant sample/gel diameters. The sample or gel diameters should be in millimeters.}
 \item{do_plot}{Indicates whether or not plots should be drawn while reading the files}
-\item{do_smoothing}{Indicates whether or not smoothing by \link{smooth_mecmesin_data} should be performed when reading the files}
+\item{do_smoothing}{Indicates whether or not smoothing by \link{smooth_texture_analyzer_data} should be performed when reading the files}
 \item{lines_to_read}{Possibility to restrict the lines to be read, a numerical vector indicating the lines to be read.}
 \item{downup}{sample displacement down (compression) followed by equal movement up (release)?}
 \item{...}{Additional arguments to be passed to \link{smooth_texture_analyzer_data}. These arguments should be named according to the arguments given in \link{smooth_texture_analyzer_data} } 
