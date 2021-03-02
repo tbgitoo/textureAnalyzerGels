@@ -5,7 +5,7 @@
 write_foam_mechanical_analysis_list_to_xlsx
 }
 \description{
- Writes the output of \code{foam_mechanical_analysis_list}, which is a nested list (list of list), into an Excel file for further standalone processing
+ Writes the output of \code{foam_mechanical_analysis_list}, which is a nested list (list of list), into an Excel file for further standalone processing.
 }
 \usage{
 write_foam_mechanical_analysis_list_to_xlsx(file_info,output_foam_mechanical_analysis_list,file_location)
@@ -26,6 +26,8 @@ Description of the compression curves. This is a dataframe, which needs to conta
 \author{
 Thomas Braschler
 }
+
+\details{This function uses the various spreadsheet creation, manipulation and saving functions provided by the \link{xlsx} package for generating and writing of the output Excel file.}
 
 \examples{
 data(CMC_concentration_data)
