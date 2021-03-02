@@ -35,3 +35,9 @@ plot(sampleGel$Distance, sampleGel$pressure/1e3,type="l",xlab="Distance [mm]",yl
 
 }
 \keyword{datasets}
+
+\author{
+Patrick Burch \cr
+Thomas Braschler
+}
+

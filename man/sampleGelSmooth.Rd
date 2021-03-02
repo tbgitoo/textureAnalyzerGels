@@ -42,3 +42,8 @@ plot.xy(xy.coords(sampleGelSmooth$Distance,sampleGelSmooth$pressure/1e3),type="l
 
 
 \keyword{datasets}
+
+\author{
+Patrick Burch \cr
+Thomas Braschler
+}
