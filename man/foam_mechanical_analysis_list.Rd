@@ -27,7 +27,7 @@ Possibility to pass down further arguments to \link{foam_mechanical_analysis}, u
 }
 
 \value{
-A list with as many elements as there are lines \code{file_info}. Each of these elements is the output of \link{read_texture_analyzer_tab}. As the output of \link{read_texture_analyzer_tab} is a list itself, the return value is a list of lists.   }
+A list with as many elements as there are lines \code{file_info}. Each of these elements is the output of \link{foam_mechanical_analysis}. As the output of \link{foam_mechanical_analysis} is a list itself, the return value is a list of lists.   }
 
 
 \author{
@@ -35,7 +35,7 @@ Thomas Braschler
 }
 
 \seealso{
-\link{read_texture_analyzer_tab}, used internally
+\link{foam_mechanical_analysis}, used internally
 }
 \examples{
 data(CMC_concentration_data)
