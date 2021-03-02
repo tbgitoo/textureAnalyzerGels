@@ -31,7 +31,7 @@ The correction for the apparent Young modulus as calculated by the Hertz model. 
 
 \details{
 
-This function calculates the no-slip case as proposed by Long et al., Effects of Gel Thickness on Microscopic Indentation Measurementsof Gel Modulus, Biophysical Journal Volume 101, 2011, 643-650.
+This function calculates the no-slip case as proposed by Long 2011.
 
 
 }
@@ -48,4 +48,11 @@ young_modulus_thin_film_correction()
 }
 
 \keyword{ misc }
+
+
+\references{
+Rong Long,Matthew S. Hall,Mingming Wu, and Chung-Yuen Hui: Effects of Gel Thickness on Microscopic Indentation Measurements
+of Gel Modulus, Biophysical Journal Volume 101, 2011, 643-650.
+}
+
 
