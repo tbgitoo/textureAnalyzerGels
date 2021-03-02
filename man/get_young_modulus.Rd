@@ -34,7 +34,7 @@ Whether or not the routine should provide graphical output (regression lines in 
 Vector of young moduli, one per direction (up or down)
 }
 
-\details{The Young modulus estimation here is by linear regression (via \link{lm}) in the stress-strain diagram up to a given maximum \code{strain} value. No correction for possible non-linearity is attempted. If significant non-linearity exists, non-linear models such as the Ogden model (\link{ogden_model}), or, in the case of the existence of a plateau, \link{foam_mechanical_analysis} should be used instead.}
+\details{The Young modulus estimation here is by attempting to evaluate the slope of the stress-strain curve (ATSM E111, via \link{lm}) up to a given maximum \code{strain} value. No correction for possible non-linearity is attempted. If significant non-linearity exists, non-linear models such as the Ogden model (Ogden 1972, \link{ogden_model}), or, in the case of the existence of a plateau (Gibson 1997), \link{foam_mechanical_analysis} should be used instead.}
 
 \author{
 Thomas Braschler
@@ -50,4 +50,11 @@ get_young_modulus(sampleGelSmooth)
 }
 
 \keyword{ misc }
+
+\references{
+ATSM standard E111: https://www.astm.org/Standards/E111.htm\cr\cr
+Gibson, L. J. & Ashby, M. F. Cellular Solids: Structure and properties. (Cambridge University Press, 1997). \cr\cr
+Ogden, R. W. (1972), Large Deformation Isotropic Elasticity - On the Correlation of Theory and Experiment for Incompressible Rubberlike Solids,Proceedings of theRoyal Society A: Mathematical, Physical and Engineering Sciences, 326(1567), 565-584.
+
+}
 
