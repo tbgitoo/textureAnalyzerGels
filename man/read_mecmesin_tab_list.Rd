@@ -41,7 +41,7 @@ Thomas Braschler, Patrick Burch
 
 
 \examples{
-# This example is taken from https://doi.org/10.5281/zenodo.4441090 (Filippova et al. 2021), Supplementary_Fig_S6.zip, sample2 and sample3 for the traction test. From there, we copied the file "raw-TensileStrenght(peellike)(V1)-Modified Version-sample-2.txt" and "raw-TensileStrenght(peellike)(V1)-Modified Version-sample-3.txt" data files, as well as the file listing "files_stretch.xlsx" for these two data files here to serve as an example.
+# The data for this example is taken from https://doi.org/10.5281/zenodo.4441090 (Filippova et al. 2021), Supplementary_Fig_S6.zip, sample2 and sample3 for the traction test. From there, we copied the file "raw-TensileStrenght(peellike)(V1)-Modified Version-sample-2.txt" and "raw-TensileStrenght(peellike)(V1)-Modified Version-sample-3.txt" data files, as well as the file listing "files_stretch.xlsx" for these two data files here to serve as an example.
 path = system.file('sampleData/mecmesin', package = 'textureAnalyzerGels');
 tensile_test_file_info = read.xls(file.path(path,"files_stretch.xlsx") )
 tensile_test_data=read_mecmesin_tab_list(tensile_test_file_info,root_folder=path,do_smoothing=TRUE,do_plot=TRUE,downup=FALSE,sd=0.1)
