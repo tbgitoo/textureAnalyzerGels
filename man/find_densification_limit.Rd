@@ -38,7 +38,17 @@ Thomas Braschler
 }
 \examples{
 data(sampleGelSmooth)
-find_densification_limit(sampleGelSmooth[sampleGelSmooth$direction=="down",])
+touch_point=find_initial_touch_point(sampleGelSmooth[sampleGelSmooth$direction=="down",])
+elastic_limit = find_elastic_limit(sampleGelSmooth,touch_point)
+densification_limit=find_densification_limit(sampleGelSmooth[sampleGelSmooth$direction=="down",],touch_point,elastic_limit)
+plot(Force ~ Distance, sampleGelSmooth[sampleGelSmooth$direction=="down",]) 
+lines(rep(touch_point,2),c(0,11),col="black")
+lines(rep(elastic_limit,2),c(0,11),col="black")
+lines(rep(densification_limit,2),c(0,11),col="red")
+text(touch_point,11.5,labels="Touch point",adj=0.5)
+text(elastic_limit,11.5,labels="Elastic limit",adj=0.5)
+text(densification_limit,11.5,labels="Densification limit",adj=0.5,col="red")
+
 }
 
 \keyword{ misc }
