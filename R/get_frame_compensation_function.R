@@ -1,4 +1,4 @@
-get_frame_compensation_function<-function(filename)
+get_frame_compensation_function<-function(filename, min_force=5, max_force = 20)
 {
 	
 	
@@ -6,7 +6,7 @@ get_frame_compensation_function<-function(filename)
 	
 	for_frame_compliance_compensation = frame_compliance_data[frame_compliance_data$direction=="down",c("Distance","Force")]
 	
-	for_origin=coefficients(lm(Force ~ Distance, for_frame_compliance_compensation[for_frame_compliance_compensation$Force>5 & for_frame_compliance_compensation$Force<20,]))
+	for_origin=coefficients(lm(Force ~ Distance, for_frame_compliance_compensation[for_frame_compliance_compensation$Force>min_force & for_frame_compliance_compensation$Force<max_force,]))
 	
 	touch_point = -for_origin["(Intercept)"]/for_origin["Distance"]
 	
