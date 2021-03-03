@@ -7,7 +7,7 @@ find_landmarks_gel_compression
 Finds landmark points in as porous gel compression curve (Force - Distance curve). Currently, detection of the gel touch point in both the "down" and "up" cycle of the chuck is implemented. The analysis is based on the general curve for foams, comprising an initial steep elastic segment, followed by a plateau and then a densification region (Gibson &Ashby, 1997).
 }
 \usage{
-find_landmarks_gel_compression(theData, approximate_gel_touch_point = NULL)
+find_landmarks_gel_compression(theData, approximate_gel_touch_point = NULL,gel_thickness=NULL)
 }
 
 \arguments{
@@ -17,6 +17,7 @@ find_landmarks_gel_compression(theData, approximate_gel_touch_point = NULL)
   \item{approximate_gel_touch_point}{
 Initial guess of the gel touch point
 }
+\item{gel_thickness}{Macroscopic gel thickness estimation, can be used to improve initial guess for the densification limit (via \link{find_densification_limit})}
 }
 \value{
 Vector of estimated touch points, one for the down movement, one for the up movement

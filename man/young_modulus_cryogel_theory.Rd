@@ -8,7 +8,7 @@ young_modulus_cryogel_theory
 Theoretical calculation of the Young modulus of a cryogel
 }
 \usage{
-young_modulus_cryogel_theory(polymer_volume_fraction=0.01,E_polymer=10e6)
+young_modulus_cryogel_theory(polymer_volume_fraction=0.01,E_polymer=10e6,structural_factor=1)
 }
 
 \arguments{

@@ -8,7 +8,7 @@ foam_mechanical_analysis
  Analysis of foam compression curves. This function assumes a classical foam compression behaviour, with a steeper elastic, a flatter plateau and then again a steep densification region in stress-strain (or equivalently, force-distance) diagrams (Gibson&Ashby, 1997). This function separates the prototypical foam compression curve into different zones by indicating the transition points: [free zone (no contact between chuck and foam)] - touchpoint - elastic compression region - transition to plateau -  plateau region - transition to densification- densification. Localization and mechanical properties are analyzed at the points from touchpoint to the transition to densification.
 }
 \usage{
-foam_mechanical_analysis(theData,start_height,approximate_gel_touch_point=NULL,landmarks=NULL,gel_thickness=NULL,stress_column="pressure",stress_slope_column="pressureSlope")
+foam_mechanical_analysis(theData,start_height,approximate_gel_touch_point=NULL,landmarks=NULL,gel_thickness=NULL,stress_column="pressure",stress_slope_column="pressureSlope", do_plot = FALSE)
 
 }
 

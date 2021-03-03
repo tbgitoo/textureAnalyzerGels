@@ -1,5 +1,8 @@
 read_texture_analyzer_tab_list <-
-function(file_info,root_folder,folder_column="Folder",file_column="File",chuck_diameter_column="diameter_mm",do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,aggregate_by="Distance",downup=TRUE,dec=".",skip_lines=1,unit_line=1,sep="",Force_column="Force",Distance_column="Distance",use_fill_for_read_table=FALSE,...)
+function(file_info,root_folder,folder_column="Folder",file_column="File",
+         chuck_diameter_column="diameter_mm",do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,
+         aggregate_by="Distance",downup=TRUE,dec=".",skip_lines=1,unit_line=1,sep="",
+         Force_column="Force",Distance_column="Distance",use_fill_for_read_table=FALSE,...)
 {
     
     all_data = vector(mode="list",length=dim(file_info)[1])

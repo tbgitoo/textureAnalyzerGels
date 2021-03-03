@@ -17,7 +17,7 @@ tissue_mechanical_analysis(theData,start_height,approximate_touch_point=NULL,str
 Force-Distance data, typically from a "down"-"up" cycle of the chuck; the data needs to be smooth and contain already at the very least the columns \code{Distance} and \code{direction}, in addition to the colums described by the arguments \code{stress_column} and \code{stress_slope_column}. Such a variable is typically obtained by using \link{read_texture_analyzer_tab} and then  \link{smooth_texture_analyzer_data} on the result. Care should be taken for the smoothing parameter \code{sd} in \link{smooth_texture_analyzer_data}, both the \code{pressure} and the \code{pressureSlope} should appear smooth in a diagram versus \code{distance}, while overall look of the curve with a flat part, a steeper elastic part, a less steep plateau and then again rising densitifcation in \code{pressure} vs. \code{Distance} should be conserved.
 }
 \item{start_height}{The texture Analyzer typically starts a file by \code{Distance=0}, so we loose the information on how high the chuck is above the substrate before starting compression. This needs to be noted separately and transmitted to this function in the \code{start_height} argument.}
-  \item{approximate_gel_touch_point}{
+  \item{approximate_touch_point}{
 Initial guess for the gel touch point (will be refined by a call to \link{find_initial_touch_point})}
 \item{stress_column}{
 Name of the column in \code{theData} that contains the stress information. By default, this is the "pressure" column as produced by \link{read_texture_analyzer_tab} and smoothened by  \link{smooth_texture_analyzer_data}. An alternative column can be used, for instance if chuck buoyancy is substracted with the creation of a new column (done manually). 
@@ -35,6 +35,7 @@ A list with different geometric and mechanical measures: \cr\cr
 \item{E}{A matrix with rows for the directions ("down", "up" in general) and columns for the different strains at which the Young modulus is estimated (i.e. 9 colums for Young moduli at strains 0.1, 0.2, 0.3, ... , 0.9}
 \item{hysteresis}{An overall estimate of the hysteresis between compression ("down") and relaxation ("up"). This is the area between the "down" and "up" curve devided by the area under the "down" curve.}
 
+}
 }
 
 \details{ The estimations of the Young modulus given in this function approximately corresponds to the local tangent modulus (ATSM E111); they are found by local linear regression (\link{lm}). }
@@ -61,6 +62,6 @@ results
 
 \keyword{ misc }
 
-\references{\references{
-ATSM standard E111: https://www.astm.org/Standards/E111.htm}
+\references{
+ATSM standard E111: \href{https://www.astm.org/Standards/E111.htm}{https://www.astm.org/Standards/E111.htm	}}
 

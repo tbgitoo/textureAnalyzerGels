@@ -8,7 +8,7 @@ detect_compression_cycles
 Detects cycle of back-and-forth movement in texture Analyzer data
 }
 \usage{
-detect_compression_cycles(textureAnalyzerData)
+detect_compression_cycles(textureAnalyzerData,do_aggregation=TRUE)
 }
 
 \arguments{

@@ -8,7 +8,8 @@ read_mecmesin_tab_list
 Reads a series of texture analyzer tab files
 }
 \usage{
-read_mecmesin_tab_lis(file_info,root_folder=getwd(),folder_column="Folder",file_column="File",sample_diameter_column="diameter_mm",do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,downup=TRUE,...)
+read_mecmesin_tab_list(file_info,root_folder=getwd(),folder_column="Folder",file_column="File",
+sample_diameter_column="diameter_mm",do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,downup=TRUE,...)
 }
 
 \arguments{

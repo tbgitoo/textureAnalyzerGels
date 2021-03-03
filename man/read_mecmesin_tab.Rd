@@ -17,7 +17,6 @@ File path for the tabulated text file.
   \item{sample_diameter}{
 Diameter of the chuck (or sample, whichever is smaller) used to compress the gel. Indication in meters, the chuck is assumed to be circular. 
 }
-\item{aggregate_by}{Column to be used for aggregation. Provide FALSE if no aggregation is desired. If \code{aggregate_by="Time"} is indicated, the Time column will be rounded to integers prior to aggregation }
 \item{downup}{Chuck displacement down (compression) followed by equal movement up (release)? }
 }
 \details{
