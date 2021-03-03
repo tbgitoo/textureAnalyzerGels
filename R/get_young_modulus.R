@@ -2,16 +2,21 @@ get_young_modulus <-
 function(theData,approximate_gel_touch_point=NULL,gel_thickness=1,strain=0.1,doplot=FALSE,do_touch_point_estimation=TRUE,subtract_chuck_buoyancy=FALSE)
 {
 	do_tp=FALSE
+	touch_points = vector(mode="numeric",length=length(unique(theData$direction)))
+	names(touch_points)=unique(theData$direction)
+	
 	if(do_touch_point_estimation | is.null(approximate_gel_touch_point))
 	{
+	  
 		do_tp=TRUE
-		touch_points = find_landmarks_gel_compression(theData,approximate_gel_touch_point=NULL)	
+		for(direction in names(touch_points))
+		{
+		  touch_points[direction]=find_initial_touch_point(theData[theData$direction==direction,],approximate_touch_point=approximate_gel_touch_point) 
+		}
 
-	}
-	else
+	} 	else
 	{
-		touch_points = vector(mode="numeric",length=length(unique(theData$direction)))
-		names(touch_points)=unique(theData$direction)
+		
 		touch_points[]=approximate_gel_touch_point
 	}
 	

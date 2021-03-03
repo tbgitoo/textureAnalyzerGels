@@ -1,5 +1,6 @@
 \name{sampleGel}
 \alias{sampleGel}
+\alias{start_height_mm}
 \docType{data}
 \title{
 Sample Gel compression data
@@ -9,7 +10,7 @@ Compression curve for a 1.5 percent CMC (MW=90kDa) cryogel, crosslinked at every
 }
 \usage{data(sampleGel)}
 \format{
-  A data frame names \code{sampleGel} with the following variables
+  A data frame named \code{sampleGel} with the following variables
   \describe{
     \item{\code{Distance}}{Distance travalled by the chuck from its original height, in millimeters }
     \item{\code{direction}}{Direction of movement (i.e. down, then up)}

@@ -6,6 +6,6 @@ Date: 2013-10-18
 Author: Patrick Burch, Marina Braschler, Thomas Braschler
 Depends: gsl, gdata, xlsx
 Maintainer: Thomas Braschler <thomas.braschler@gmail.com>
-Description: Reads tabulated force-distance files made by the Exponent Software for the Texture Analyzer machines (export to text format), and Mecmesin (export from VectorPro)
-License: License: GPL-3 | file LICENCE
+Description: Reads tabulated force-distance files made by the Exponent Software for the Texture Analyzer machines (export to text format), and Mecmesin (export from VectorPro).
+License: GPL (>= 3)
 LazyLoad: yes

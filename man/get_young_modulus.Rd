@@ -41,7 +41,7 @@ Thomas Braschler
 }
 
 \seealso{
-\link{find_landmarks_gel_compression}, used internally
+\link{find_initial_touch_point}, used internally
 }
 \examples{
 data(sampleGelSmooth)

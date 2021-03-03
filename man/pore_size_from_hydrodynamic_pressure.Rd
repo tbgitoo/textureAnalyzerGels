@@ -45,7 +45,7 @@ Numerical estimation of the pore radius
 Thomas Braschler
 }
 \examples{
-pore_size_from_hydrodynamic_pressure(D=1e-9,nu=1e-3,E=1e4)
+pore_size_from_hydrodynamic_pressure(P_up=500,P_down=1000,gel_thickness=1e-3,v_compression=1e-3,viscosity=1e-3,disk_radius=2e-3)
 }
 \keyword{ misc }
 

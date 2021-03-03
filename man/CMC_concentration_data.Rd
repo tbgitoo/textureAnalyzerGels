@@ -1,5 +1,7 @@
 \name{CMC_concentration_data}
 \alias{CMC_concentration_data}
+\alias{CMC_concentration_blank}
+\alias{CMC_concentration_file_info}
 \docType{data}
 \title{
 Sample set of cryogel compression data, with different concentration of carboxymethylcellulose
