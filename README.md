@@ -8,5 +8,10 @@ library(devtools)
 
 install_github("tbgitoo/textureAnalyzerGels")
 
+The most recent release of this package is archived at Zenodo: 
+
+<a href="https://doi.org/10.5281/zenodo.4589276"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4589276.svg" alt="DOI"></a>
+
+
 
 
