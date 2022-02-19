@@ -1,8 +1,8 @@
 read_mecmesin_tab <-
-function (file, sample_diameter = 0.022, downup = TRUE) 
+function (file, sample_diameter, downup = TRUE, split_down_up_using_distance=FALSE)
 {
-    # In the Mecmesin, the sample is smaller than the chuck, and since for pressure calculation the smaller of the two areas counts, we feed this into the textureAnylzer routines 
-	# as teh chuck diameter
+    # In the Mecmesin, the sample is smaller than the chuck, and since for pressure calculation the smaller of the two areas counts, we feed this into the textureAnylzer routines
+    # as teh chuck diameter
     chuck_diameter = sample_diameter
 
     dec="," # Mecmesin is a very french company and likes commaes
@@ -19,6 +19,6 @@ function (file, sample_diameter = 0.022, downup = TRUE)
 
 
     return (read_texture_analyzer_tab(file=file,chuck_diameter=chuck_diameter,aggregate_by=FALSE, downup=downup, dec=dec,skip_lines=skip_lines,unit_line=unit_lines,
-sep=sep, Force_column=Force_column,Distance_column=Distance_column))
-	
+sep=sep, Force_column=Force_column,Distance_column=Distance_column, split_down_up_using_distance=split_down_up_using_distance))
+    
 }
