@@ -45,7 +45,7 @@ function(theData,approximate_touch_point=NULL,free_region=NULL)
     
     # Now, going back, find the point where we go below the max_error again
     
-    limiting_point = max((theData$Distance[selector_down_first_cycle])[theData$Distance[selector_down_first_cycle] < certainly_touching & theData$Force[selector_down_first_cycle]<predict(free_lm,newdata=theData[selector_down_first_cycle,])+5*max_error_free])
+    limiting_point = max((theData$Distance[selector_down_first_cycle])[theData$Distance[selector_down_first_cycle] < certainly_touching & theData$Force[selector_down_first_cycle]<=predict(free_lm,newdata=theData[selector_down_first_cycle,])+5*max_error_free])
     
     touching_lm = lm(Force ~ Distance, theData[selector_down_first_cycle & theData$Distance>=limiting_point & theData$Distance <= 2*certainly_touching-limiting_point,])
     
