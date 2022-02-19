@@ -1,7 +1,5 @@
 read_mecmesin_tab_list <-
-function(file_info,root_folder=getwd(),folder_column="Folder",
-         file_column="File",sample_diameter_column="diameter_mm",
-         do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,downup=TRUE,...)
+function(file_info,root_folder,folder_column="Folder",file_column="File",sample_diameter_column="diameter_mm",do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,downup=TRUE,split_down_up_using_distance=FALSE,...)
 {
     
     all_data = vector(mode="list",length=dim(file_info)[1])
@@ -32,7 +30,7 @@ function(file_info,root_folder=getwd(),folder_column="Folder",
         
         theFolder = do.call(file.path,as.list(folder_parts))
         
-        theData=read_mecmesin_tab(file=file.path(root_folder,theFolder,theFile[,file_column]),sample_diameter=theFile[,sample_diameter_column]/1e3,downup=downup)
+        theData=read_mecmesin_tab(file=file.path(root_folder,theFolder,theFile[,file_column]),sample_diameter=theFile[,sample_diameter_column]/1e3,downup=downup, split_down_up_using_distance=split_down_up_using_distance)
 
         
         
@@ -71,7 +69,6 @@ function(file_info,root_folder=getwd(),folder_column="Folder",
     return(all_data)
     
 
-	
-	
+    
+    
 }
-
