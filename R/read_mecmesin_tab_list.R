@@ -1,5 +1,5 @@
 read_mecmesin_tab_list <-
-function(file_info,root_folder,folder_column="Folder",file_column="File",sample_diameter_column="diameter_mm",do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,downup=TRUE,split_down_up_using_distance=FALSE,...)
+function(file_info,root_folder=getwd(),folder_column="Folder",file_column="File",sample_diameter_column="diameter_mm",do_plot=TRUE,do_smoothing=TRUE,lines_to_read=NULL,downup=TRUE,split_down_up_using_distance=FALSE,...)
 {
     
     all_data = vector(mode="list",length=dim(file_info)[1])

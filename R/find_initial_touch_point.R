@@ -16,7 +16,7 @@ function(theData,approximate_touch_point=NULL,free_region=NULL)
     
     if(any(theData$direction=="down"))
     {
-       selector_down_first_cycle == "down"
+        selector_down_first_cycle=theData$direction=="down"
     }
     
     if("cycle" %in% colnames(theData))
